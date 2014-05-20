@@ -1,0 +1,22 @@
+The Idsa Reference Monitor
+
+Idsa implements an API which can be used by security-aware applications to delegate/externalise access control logic: The application reports a pending action to the API (usually with a single function call) and idsa will tell the application if it should process the event or not.
+For example: Should an ftp server allow an anonymous user from host mirror.example.com to execute a SITE command ?
+
+Answering this question can be arbitrary complex, it can depend on things such as:
+
+Do we allow anonymous ftp in the first place ?
+Do we have a long history of connections from mirror.example.com ?
+Is today a weekday ?
+Did mirror.example.com run a port scan against us in the last 10 minutes ?
+Did somebody recently discover a vulnerability in our ftp server ?
+Few applications allow a system administrator to specify such complex access criteria, usually because it is too much effort to implement for a single application.
+
+This is where idsa enters the picture - it provides a simple API for the application programmer to report the request, and idsa does all tests to decide if it should be granted.
+
+Think of idsa as a more general case of tcp wrappers. Tcpd and libwrap are designed to do access control for a particular case, incoming IP connections. idsa will do it for the generic case, answering questions such as:
+
+Should a user be allowed to log in ?
+Run a given program ?
+Update a certain web page ?
+So the idsa API is intended to simplify the task of adding fine grained access controls to applications. While idsa takes the actual decision, the information about the event is supplied by the application. Similarly the application is used to enforce the decision. In other words idsa is an external and voluntary reference monitor.
