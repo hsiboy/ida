@@ -1,0 +1,80 @@
+.\" Process this file with
+.\" groff -man -Tascii idsalog.1
+.\"
+.TH IDSALOG 1 "APRIL 2001" "IDS/A System"
+.SH NAME
+idsalog \- IDS/A access control, logging and IDS for shell scripts
+.SH SYNOPSIS
+.B idsalog [-dfq] [-m
+.I scheme
+.B ] [ -n
+.I name
+.B ] [ -s
+.I service
+.B ] [ -ra
+.I "availability risk"
+.B ] [ -rc
+.I "confidentiality risk"
+.B ] [ -ri
+.I "integrity risk"
+.B ] [ 
+.I "optional fields"
+.B ]
+.SH DESCRIPTION
+.B idsalog
+submits an an event to 
+.BR idsad (8)
+returning 0 if the event is permitted and 1 if not. 
+.SH OPTIONS
+.IP -d
+Enable debug messages
+.IP -f
+Set flag indicating that the reported event can and will
+be blocked
+.IP -q
+Quiet - do not print answer to stdout
+.IP "-m scheme"
+Scheme field, equivalent to parameter 3 of 
+.BR idsa_set (3)
+.IP "-n name"
+Event name, equivalent to parameter 2 of 
+.BR idsa_set (3)
+.IP "-s service"
+Service field, equivalent to parameter 1 of 
+.BR idsa_open (3)
+.IP "-ra risk"
+Risk to availability, expressed as a cost and confidence value
+in the range [-1,1] and [0,1] respectively. Availability risks
+are generally negative, as denying an event reduces availability
+.IP "-rc risk"
+Risk to confidentiality. Usually positive
+.IP "-ri risk"
+Risk to integrity. Usually positive
+.IP "optional fields"
+Optional fields are specified as a name type value triple. There
+may be no spaces between the three members, name is separated from
+type by a colon and type from value by an equal sign. The format
+is the same as reported by the tulm output format. If the type
+is omitted, the value is assumed to be a string.
+.SH EXAMPLE
+.nf 
+#!/bin/bash
+if ! idsalog -qf -n run -m shell -s $0 -ra -0.3/0.3 -rc 0.2/0.4 term:string="$TERM" ; then
+  echo "permission denied"
+  exit 1
+fi
+# now do useful stuff 
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with
+the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsa_set (3),
+.BR idsa_open (3),
+.BR idsa_types (3),
+.BR idsad (8).

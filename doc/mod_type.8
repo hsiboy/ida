@@ -1,0 +1,39 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_type.8
+.\"
+.TH MOD_TYPE 8 "APRIL 2003" "IDS/A System"
+.SH NAME
+%type \- IDS/A module to check if a given field has a certain type 
+.SH SYNOPSIS
+.B %type
+.I "name type"
+.SH DESCRIPTION
+.B %type
+is used to construct rule heads which test if the
+event contains the named event field has a certain type.
+.SH EXAMPLE
+.nf
+.RS
+%type foo string : 
+  log file /var/log/foo, custom "%{time}: field foo is a string: %{foo}^J"
+.fi
+.RE
+.P 
+Log all events containing the field
+.B foo
+of 
+.I type
+.S string
+to file in a format containing time and the field value.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR idsa_types (3),
+.BR idsad (8).

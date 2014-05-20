@@ -1,0 +1,24 @@
+
+Helpful hints if you want to work on this package
+
+1 - Makefile.defs contains an INDENT variable, edit it to your liking
+    then run 
+
+      make indent
+
+    at the top level to reformat the source code.
+
+2 - Edit VERSION in Makefile.defs[,.in] to create a new 
+    version (eg 0.94-myhacks)
+
+3 - Use 
+
+      make checkpoint
+
+    at the top level to take snapshots
+
+4 - Type
+    
+      make package
+
+    to build a tar.gz file ready for distribution

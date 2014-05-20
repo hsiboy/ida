@@ -1,0 +1,65 @@
+.\" Process this file with
+.\" groff -man -Tascii idsaguardtty.8
+.\"
+.TH IDSAGUARDTTY 8 "MARCH 2002" "IDS/A System"
+.SH NAME
+idsaguardtty \- interactive access control using the terminal interface
+.SH SYNOPSIS
+.B idsaguardtty [-b] [-f
+.I format
+.B ] [ -F
+.I "custom format"
+.B ]
+.I /path/to/unix/socket
+.SH DESCRIPTION
+.B idsaguardtty
+opens a connection to a unix domain socket
+previously bound by the 
+.B idsa 
+module
+.BR mod_interactive (8)
+making it possible to approve or reject the events
+reported by the module. 
+.SH OPTIONS
+.IP -b
+Enables ringing of terminal bell if a new event arrives
+.IP "-f format"
+Selects an alternate predefined output format. Possible
+formats include
+.IR ulm , 
+.IR tulm ,
+.IR syslog , 
+.IR native , 
+.I csv 
+and 
+.I xml
+.IP "-F custom format"
+Selects a custom output format
+.SH SECURITY CONSIDERATIONS
+Unlike the primary sockets created by
+.BR idsad (8),
+the sockets of
+.BR mod_interactive (8)
+are not protected by internal 
+.BR idsad (8) 
+access controls. 
+It is recommended that the sockets are 
+created in a directory only accessible to
+authorized users. Abnormal termination
+of 
+.B idsaguardtty
+appears to confuse some kernel versions and
+may result in stale half-open connections.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with
+the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsaguardgtk (8),
+.BR mod_interactive (8),
+.BR idsad (8).

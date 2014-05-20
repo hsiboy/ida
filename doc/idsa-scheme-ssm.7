@@ -1,0 +1,133 @@
+'\" tp
+.\" Process this file with
+.\" groff -t -p -man -Tascii idsa-scheme-ssm.7
+.\"
+.TH IDSA-SCHEME-SSM 7 "APRIL 2003" "IDS/A System"
+.SH NAME
+IDS/A Service State Model
+
+.SH DESCRIPTION
+
+.PP
+
+This page presents a simple state model which
+represents the monitored system as 
+a set of transitions. These are shown
+in the state diagram given below. Note
+that the depicted finite state automaton can be extended to
+a pushdown automaton where 
+.B wstart
+pushes a symbol and both
+.B wstop 
+and
+.B wfail
+consume it in order to encode the
+constraint that a unit of work has to be 
+initiated before it can complete or fail.
+
+.PS
+circlerad = 0.15
+
+StateA: circle
+move right from right  of StateA
+StateB: circle
+move right from right  of StateB
+StateC: circle
+move down  from bottom of StateC
+StateE: circle
+move left  from left   of StateE
+StateD: circle
+
+arrow       right from       right  of StateA
+arrow       right from       right  of StateB
+arrow       right from       right  of StateD
+arrow       down  from       bottom of StateB
+arrow right down  from lower right  of StateB to upper left of StateE
+arrow right up    from upper right  of StateD to lower left of StateC
+
+mx = 0.4
+my = 0.4
+x = StateB.n.x
+y = StateB.n.y
+LoopB : spline -> from x,y to x+0.1,y+0.2 to x,y+my    to x-0.1,y+0.2 to x,y
+x = StateD.w.x
+y = StateD.w.y
+LoopD : spline -> from x,y to x-0.2,y+0.1 to x-mx,y    to x-0.2,y-0.1 to x,y
+x = StateD.n.x
+y = StateD.n.y
+spline -> from x,y to x-0.2,y+lineht/2 to x,y+lineht
+
+"wstart, wfail, wstop, sconfig" at  1.00,0.65
+"sstart"    at 0.50, 0.15
+"sstop"     at 1.35, 0.15
+"stop"      at 1.70,-0.30
+"scontinue" at 0.49,-0.40
+"spause"    at 1.14,-0.40
+"sfail"     at 1.70,-0.50
+"sconfig"   at 0.55,-0.65
+"sfail"     at 1.35,-0.65
+
+.PE
+
+.SH FIELDS
+
+.IP IDSA_SSM
+This field contains the transitions made by the application. 
+It should have of the following value strings:
+
+.RS
+.IP IDSA_SSM_SSTART
+Service ready to do work
+.IP IDSA_SSM_SPAUSE
+Service suspended
+.IP IDSA_SSM_SCONTINUE
+Service continued
+.IP IDSA_SSM_SCONFIG
+Service reconfigured
+.IP IDSA_SSM_SSTOP
+Service completed successfully
+.IP IDSA_SSM_SFAIL
+Service terminated abnormally
+.IP IDSA_SSM_WSTART
+Started a unit of work
+.IP IDSA_SSM_WSTOP
+Completed a unit of work successfully
+.IP IDSA_SSM_WFAIL
+Failed to complete a unit of work
+
+.RE
+
+.SH EXAMPLES
+
+.RS
+.nf
+struct sockaddr_in sa;
+int fd, status, sz;
+ ...
+sz = sizeof(sa);
+fd = accept(lfd, &sa, &sz);
+idsa_set(c, "new-request", "samplehttpd", 1,
+    ...
+    "client-ip", IDSA_T_SADDR, &sa,
+    IDSA_SSM, IDSA_T_STRING, IDSA_SSM_WSTART,
+    NULL);
+ ...
+status = 404; 
+idsa_set(c, "new-request", "samplehttpd", 0,
+    ...
+    "http-status", IDSA_T_INT, &status,
+    IDSA_SSM, IDSA_T_STRING, IDSA_SSM_WFAIL,
+    NULL);
+.fi
+.RE
+.P
+
+.PP
+Report an HTTP request on arrival, as well as the failure
+to service it.
+
+.SH SEE ALSO
+
+.BR idsa_set (3),
+.BR idsa_scan (3),
+.BR idsad (8).

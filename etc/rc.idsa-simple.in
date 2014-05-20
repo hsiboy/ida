@@ -1,0 +1,62 @@
+#!/bin/sh
+#
+# Simple IDSA installation consisting of core server and tcp logger
+#
+# This init script is loosely based on those shipping 
+# with debian. If you run debian, copy this file to
+# /etc/init.d and add a symlink at the appropriate
+# runlevel, eg
+#  
+#   cp rc.idsa-full /etc/init.d/idsa
+#   cd /etc/rc2.d
+#   ln -s ../init.d/idsa S30idsa
+
+# file containing rules for main daemon
+#
+CONF=/usr/local/etc/idsad.conf
+
+# idsa binaries
+#
+IDSAD="/usr/local/sbin/idsad -i daemon"
+IDSATCPLOGD="/usr/local/sbin/idsatcplogd -i daemon"
+IDSAPID=/usr/local/sbin/idsapid
+
+# more secure version: create user idsa, and replace
+# /chroot with something of little use to an attacker
+#
+#IDSAD="/usr/local/sbin/idsad -i idsa -r /chroot -p /var/run/idsa /chroot/var/run/idsa"
+#IDSATCPLOGD="/usr/local/sbin/idsatcplogd -i idsa -r /chroot"
+
+# lock sockets
+#
+TCPLOCK=/var/run/idsatcplogd
+IDSALOCK=/var/run/idsa
+
+case "$1" in
+  start)
+     echo -n "Starting idsa subsystem:"
+     $IDSAD -f $CONF
+     echo -n " idsad"
+     $IDSATCPLOGD
+     echo -n " idsatcplogd"
+     echo "."
+     ;;
+  stop)
+     echo -n "Stopping idsa subsystem:"
+     $IDSAPID -k $TCPLOCK
+     echo -n " idsatcplogd"
+     $IDSAPID -k $IDSALOCK
+     echo -n " idsad"
+     echo "."
+     ;;
+  restart)
+     echo -n "Restarting idsad: "
+     $IDSAD -kf $CONF
+     echo "idsad."
+     ;;
+  *)
+     echo "Usage: $0 {start|stop|restart}"
+     exit 1
+esac
+
+exit 0

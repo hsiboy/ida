@@ -1,0 +1,29 @@
+idsaguile allows you write scheme programs to allow or deny an
+incoming event, as well as correlate related events.
+
+idsaguile needs to be started as a subprocess of idsad which pipes
+an event to idsaguile and reads the replies. For example:
+
+%pipe "/usr/local/sbin/idsaguile /usr/local/share/idsa/example-log.scm", timeout 5,
+fail closed : allow; log file /var/log/idsa/guile, format tulm
+
+This rule will allow events for which idsaguile returns true and
+log them to the file /var/log/idsa/guile. In case idsaguile dies
+or fails to send a reply within 5 seconds[*] no events will 
+match.
+
+The .scm file should be provided by the user, and needs to define
+a function called idsa which accepts a single list consisting of
+a sublist for each typed label value pair. The idsa function will
+be called for all incoming events, if it returns true the rule
+will fire, if false it won't. example-log.scm contains a simple
+idsa function which always returns true and logs its parameters.
+
+If idsaguile is started with the -r option, the .scm file given 
+on its command line and any other guile support files will have
+to be available within the chrooted environment.
+
+[*] In the example idsaguile will receive SIGTERM if it does not
+respond within 5 seconds, so a slow scheme program may need to
+install a signal handler. The default timeout is 5 seconds to
+prevent a dead/slow script holding up idsad.

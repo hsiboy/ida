@@ -1,0 +1,15 @@
+
+
+A simple example. You do not need to have the system installed
+to try it, just compile the library and example. Then invoke the
+./run.sh script.
+
+Content:
+
+  simple-example.c   - source for application using the API
+  simple-example     - executable
+  run.sh             - wrapper to run the system without
+                       installing library or server
+  idsa.d/example     - fallback configuration file containing
+                       rules
+  

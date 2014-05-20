@@ -1,0 +1,109 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_log.8
+.\"
+.TH MOD_LOG 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+log \- IDS/A output module
+.SH SYNOPSIS
+.B log 
+.I type destination 
+.B [, rotate 
+.I count
+.B ] [, sync] [, format 
+.I string
+.B ] [, custom
+.I string
+.B ]
+.SH DESCRIPTION
+.B log
+is used to write output files. 
+.I type 
+is either the string 
+.B file 
+or 
+.BR pipe . 
+If output to a file is selected, then
+destination is the absolute path to a file, 
+else it is a command. If command options are
+used then the entire command string has to be quoted.
+Usually 
+.BR idsaexec (8)
+or
+.BR idsapipe (8)
+should be used to wrap external commands, as
+these run outside the chrooted environment.
+.SH OPTIONS
+.IP "rotate count"
+Enables log file rotation. Two output files
+are created with the suffix -1 and -2. If 
+one file exceeds count then the other file
+is truncated and used as target. As 
+.BR idsad (8)
+should be run in a chroot environment, 
+log files have to be opened in advance
+and file descriptors have to be limited.
+Hence only two files. This option does 
+not apply to pipes.
+.IP sync
+Make output synchronous by opening files
+with the 
+.B O_SYNC
+flag.
+.IP "format string"
+Use a different output format. Available 
+ones include
+.BR syslog ,
+.BR ulm , 
+.BR tulm ,
+.BR native , 
+.BR internal ,
+.B csv 
+and 
+.BR xml .
+.IP "custom string"
+Use a custom string, field names a specified
+as
+.BR %{name} .
+.SH EXAMPLES
+.RS
+%true: 
+  log file /var/log/everything, sync, rotate 25000, format syslog
+.RE
+.P 
+Logs to files 
+.I /var/log/everything-1
+and 
+.IR /var/log/everything-2 ,
+writes are synchronous and rotates
+happen once a file exceeds 25000 bytes.
+The format resembles the conventional 
+system logger.
+.P
+.RS
+%true: 
+  log pipe "/usr/local/sbin/idsapipe -i nobody -T 4 /usr/bin/smbclient -M windows_box"
+.RE
+.P 
+Pipe messages to the utility 
+.BR idsapipe (8)
+which in turn invokes 
+.BR smbclient (1). 
+Note that the
+.B format 
+or 
+.B custom 
+option are not appropriate when using
+.BR idsapipe (8) 
+or 
+.BR idsaexec (8).
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR idsad (8).

@@ -1,0 +1,47 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_time.8
+.\"
+.TH MOD_TIME 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+%time \- IDS/A module triggering at certain times
+.SH SYNOPSIS
+.B %time [ utc ] [ sec | minute | hour | mday | month | wday | yday ] 
+.I value 
+.B [,
+.I values
+.B ] ...
+.SH DESCRIPTION
+The
+.B %time
+mode triggers if the event time matches the expression.
+The values are a comma separated list.
+.SH EXAMPLES
+.RS
+%time wday saturday, sunday: 
+  log file /var/log/idsa/weekend
+.RE
+.P 
+Log events happening on weekends to 
+.IR /var/log/idsa/weekend .
+.RS
+.P
+(%time hour 22,23,0,1,2,3,4 | %time wday sat,sun) & service apache & filename:file /var/www/intranet/ : 
+  deny
+.RE
+.P 
+Disallow web access to the the files stored in the directory
+.I /var/www/intranet
+between 10pm and 5am or on weekends.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR mod_log (8),
+.BR mod_timer (8),
+.BR idsad (8).

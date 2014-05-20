@@ -1,0 +1,12 @@
+This a research system, which means neither the code nor the 
+underlying concepts have been tested in the real world. 
+
+This release is a partial rewrite of an older prototype and 
+probably contains significant inconsistencies and omissions.
+It is an alpha release.
+
+I am the only person who has looked at the code sofar, and 
+I am new to writing robust systems. 
+
+I have not audited the code and am probably not qualified to 
+do so because I am unlikely to spot my own mistakes.

@@ -1,0 +1,23 @@
+
+Sample idsad configuration files
+
+idsad.conf                 - default configuration file with lots of logging
+idsad-signatures.conf      - sample signatures triggering on unusual activity
+idsad-interactive.conf     - approve remote logins interactively using 
+                             idsaguardtty or idsaguardgtk
+idsad-simple.conf          - very simple logging rule
+
+Additions 
+
+httpd.conf                 - addition to apache to enable mod_idsa
+inetd.conf                 - example of using idsatcpd, a tcp wrapper replacement
+pam-example                - an example of using pam_idsa
+
+Startup scripts
+
+rc.idsa-full               - start all idsa services
+rc.idsa-simple             - only start the main server and connection logger
+
+Template files
+
+*.in                       - source files, can be ignored

@@ -1,0 +1,290 @@
+.\" Process this file with
+.\" groff -man -Tascii idsad.conf.5
+.\"
+.TH IDSAD.CONF 5 "JULY 2000" "IDS/A System"
+.SH NAME
+idsad.conf \- idsa configuration file
+
+.SH DESCRIPTION
+
+.PP
+An 
+.BR idsad (8)
+configuration file consists of one or more
+.B rules. 
+consist of a
+.B head 
+and a 
+.B body 
+separated by a 
+.BR colon .
+.B Rules
+are matched sequentially against events. Evaluation 
+stops at the first successful match unless the 
+.B continue
+keyword is part of the rule 
+.BR body .
+A rule
+.B head 
+contains the criteria against which an event should
+be matched, while the rule 
+.B body 
+contains a list of
+.B actions 
+which should be taken if the rule 
+.B head
+matches the event. 
+.B Actions 
+are separated (not terminated) by a
+.BR semi-colon .
+
+.SH GRAMMAR
+
+.IP "RULES ::="
+RULE
+.I [ 
+RULES 
+.I ]
+
+.IP "RULE ::="
+HEAD 
+.B :
+BODY
+
+.IP "HEAD ::="
+EXPRESSION
+.I [ 
+.B |
+HEAD 
+.I ]
+
+.IP "EXPRESSION ::="
+TEST
+.I [ 
+.B &
+EXPRESSION 
+.I ]
+
+.IP "TEST ::="
+.B (
+HEAD 
+.B ) 
+.br
+.B !
+TEST
+.br
+FIELD 
+.I [
+.B :
+TYPE 
+.I ] 
+VALUE
+.br
+.B %
+TEST_MODULE
+
+.IP "BODY ::="
+ACTION
+.I [
+.B ;
+BODY 
+.I ]
+
+.IP "ACTION ::="
+.B allow
+.br
+.B deny
+.br
+.B drop
+.br
+.B continue
+.br
+.I [ 
+.B %
+.I ] 
+ACTION_MODULE
+.sp
+
+.PP Square parenthesis denote optional tokens.
+
+.SH TESTS 
+
+.PP
+Tests performed in the rule 
+.B head 
+occur in two forms, a simple builtin test where
+a single event field is matched against a value, and 
+arbitrary test modules including
+.BR mod_counter (8),
+.BR mod_interactive (8),
+.BR mod_keep (8),
+.BR mod_regex (8),
+.BR mod_time (8),
+.BR mod_timer (8)
+and
+.BR mod_true (8).
+
+.SH ACTIONS
+
+.PP
+A list of actions is performed in the rule 
+.BR body .
+The following builtin actions are available:
+
+.TP
+.B deny
+Disallow this event if the application will honour
+such requests. Where multiple rules match an event,
+or where 
+.B deny
+and 
+.B allow
+are given in the same rule
+.B deny
+wins.
+
+.TP
+.B allow 
+Permit this event to occur if the application will
+honour such requests. The absence of a 
+.B deny
+action implies
+.BR allow .
+
+.TP
+.B drop
+Terminates the connection to the client submitting
+an event.
+
+.TP
+.B continue
+Do not terminate rule evaluation if this rule matches.
+
+.PP
+The following modules provide additional actions:
+.BR mod_log (8),
+.BR mod_counter (8),
+.BR mod_keep (8),
+and
+.BR mod_timer (8).
+
+.SH EXAMPLES
+
+.PP
+Assume the following event has been sent to 
+.BR idsad (8):
+.P
+.RS
+?pid:pid="1981" uid:uid="0" gid:gid="0" time:time="1006951869" service:string="in.telnetd"
+ host:host="knoll" name:string="connect" scheme:string="tcpd" honour:flag="1" arisk:risk="1.000/0.990" crisk:risk="0.000/0.000" irisk:risk="0.000/0.000" ip4src:addr="192.168.0.2" portsrc:port="6/8268" ip4dst:addr="192.168.0.1" portdst:port="6/23"
+.RE
+.P
+
+.PP
+And a configuration containing the following three rules:
+.P
+.RS
+%true: log file /var/log/everything ; continue
+.sp
+%regex service "pop.*d" : log file /var/log/pop
+.sp
+service:string "in.telnetd" & (! ip4src:addr 127.0.0.1) : deny ; log file /var/log/telnet
+.RE
+
+.PP
+The event is tested against each rule, starting
+at the first until a test matches.
+The first rule contains a test which always matches, thus
+the event is logged to 
+.IR /var/log/everything .
+Normally this would stop evaluation, however as the
+rule body contains the 
+.B continue 
+keyword, evaluation moves to the next rule. 
+This rule does not trigger, so the event
+it is not logged to 
+.I /var/log/pop
+and evaluation continues to the last rule.  This rule matches the
+event, so the event is denied and also logged to
+.IR /var/log/telnet .
+
+.SH "DEFAULT DENY"
+
+The rule processor defaults to allowing an event if no
+rule matches. This is easy to change by appending the 
+following rule: 
+
+.RS
+%true: log file /var/log/default-deny ; deny
+.RE
+
+However, each client connection 
+to 
+.BR idsad (8)
+generates a connect event. If this event is blocked,
+very little else will work. So this rule should 
+only occur after a rule such as the one given below:
+
+.RS
+service:string idsad : log file /var/log/internal 
+.RE
+
+.SH TESTING
+
+To debug a set of rules it is useful to prepend
+the following rule:
+
+.RS
+%true: log file /var/log/everything, 
+    format internal, rotate 10000; continue
+.RE
+
+It will report all events in the same format 
+which is used by applications to transmit them. 
+This format includes typing detail. 
+.B idsalog
+can be used to generate arbitrary events.
+
+.SH QUOTING
+
+To quote a string enclose it in double quotation marks. In a 
+quoted string a control character is escaped using a caret. For example,
+a newline is represented as
+.BR ^J ,
+not
+.B \en
+although an option exists to use the
+sequence 
+.BR \e0A .
+Backslash, double quote and caret are escaped with
+a backslash. Escape sequences are only interpreted inside
+quoted strings.
+
+.SH FILES
+
+.I /etc/idsad.conf
+.RS
+Default location of the 
+.BR idsad (8)
+configuration file.
+
+.SH AUTHOR
+
+Marc Welz
+
+.SH BUGS
+
+Tokenizer requires more quoting than strictly needed.
+
+.SH COPYING
+
+.B idsa 
+is released under the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+
+.SH SEE ALSO
+
+.BR idsad (8),
+.BR idsa (1).

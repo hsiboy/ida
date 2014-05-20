@@ -1,0 +1,79 @@
+Each event has associated with it three costs or risks.
+They describe the impact of this event on system availability
+(a), confidentiality (c) and integrity (i) - alphabetic order.
+
+The value of each risk is expressed as a floating point number
+normalized to the range -1.0 and 1.0. Since the values express
+a cost, positive values indicate an adverse affect.
+
+Events appear in two forms:
+
+A) Those which are simply reported (idsad is an observer), 
+
+ and 
+
+B) those which can be allowed or denied (idsad performs the task
+of reference monitor).
+
+In order to accommodate these two forms, the cost of an event
+is expressed as the difference in cost between the event occurring
+(R_a allow) and the event not occurring (R_d deny).
+
+Since it is impossible to deny events of form A, the cost of this
+denial is fixed at 0 (Simplification: The event not occurring is
+not reported, so there should also be no change in exposure).
+
+For example, consider the event reporting the corruption of a
+filesystem. This event belongs to form A, and has a cost or risk
+(R) to integrity (i) of 1 >= R_i_a > 0. Had this event not occurred
+(d - denied), the system integrity would not have changed R_i_d =
+0.0, thus the reported cost or risk to integrity R_i is R_i_a -
+R_i_d = R_i_a.
+
+On the other hand, consider the event requesting permission to
+grant a user logon. This event belongs to form B. Granting this
+event exposes the system to the risk of granting access to an
+imposter who might breach system confidentiality (c) with a risk
+1 > R_c_a > 0 and also have a lesser effect on system integrity
+(R_i_a) and availability (R_a_a). On the other hand, disallowing
+this request - while preserving confidentiality R_c_d = 0,
+would have a significant cost on availability 1 > R_a_d > 0.
+So the reported availability risk R_a is R_a_a - R_a_d. For most
+situations -1 < R_a <= 0 (the probability of imposter reducing
+availability is outweighed by the cost of making the system
+unavailable to a legitimate user), meaning that granting this
+request benefits system availability.
+
+The cost range -1.0 to 1.0 is local to the tuple of scheme and
+service. In other words, for a particular scheme=x and service=y
+a catastrophic failure of that particular x,y may deserve a
+rating of 1.0, even though globally this failure may be of little
+consequence. For example, failure to execute the finger service
+could be considered a total failure of availability cost 1.0 for
+the finger scheme, even though other processes and underlying
+operating system may remain operational.
+
+I have chosen this approach (as opposed to using a global range)
+for a number of reasons:
+
+1. Resolution: If all events are rated on a global range, most
+developers appear to take a justifiably conservative position
+and assign their events a moderate severity, with the result
+that most events cluster around one or two severities, reducing
+overall resolution.
+
+2. Flexibility: Assigning an absolute severity to an event could
+be best left to the operator of a particular installation. For
+example, messages relating to the failure of a web server are
+not as important to the individual serving personal web servers
+off his workstation as they are to the operators of an electronic
+commerce site, whereas the failure of the mouse server might be
+more important to the former.
+
+3. Easier to decentralize: Large systems are difficult to
+co-ordinate. Developers of different subsystems may have different
+interpretations of the importance of a particular event. Without
+good co-ordination a globally consistent range is very difficult
+to achieve. So instead of global range likely to be inconsistent,
+this system provides range on a per scheme and service basis
+which stands a better chance of being internally consistent.

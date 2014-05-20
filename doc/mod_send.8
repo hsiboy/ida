@@ -1,0 +1,104 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_send.8
+.\"
+.TH MOD_SEND 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+%send \- IDS/A module to return extra data to applications
+.SH SYNOPSIS
+.B %send 
+.I name
+.B [: 
+.I type
+.B ]
+.I value
+.SH DESCRIPTION
+.B %send
+is used in a rule body to append additional fields
+to the reply sent to the application submitting
+an event. The following names are interpreted
+by the client library, noting that rule chains
+are only honoured if the flag
+.B IDSA_F_UPLOAD
+has been set in the 
+.BR idsa_open (3)
+call.
+
+.IP reason
+A string which can be displayed by the application 
+to inform the user of the reason for denying the 
+request
+
+.IP autorule
+A chain of rules to install into the application.
+The connection to 
+.BR idsad (8)
+will be closed and the application will operate 
+autonomously
+.IP autofile
+Equivalent to above, but 
+.I value 
+is a file name which contains the rule chain to 
+be read by the application
+
+.IP prerule
+A chain of rules to install as prefilter. Only events
+which are denied by the rule chain will be forwarded
+to the server
+.IP prefile
+See 
+.B autofile
+
+.IP failrule
+A chain of rules to install into the application
+which is consulted in case 
+.BR idsad (8)
+is unavailable
+.IP failfile
+See 
+.B autofile
+
+.IP bothrule
+A chain of rules which is invoked both as prefilter
+and fallback. Use 
+.BR mod_chain (8)
+to distinguish between the different cases
+
+.IP bothfile
+See 
+.B autofile
+
+.IP stop
+Raise a 
+.B SIG_STOP
+signal in the application context 
+
+.IP sleep
+Pause application for the specified number
+of seconds
+
+.SH EXAMPLE
+.RS
+%true : send autorule:string "%true: allow" ; allow
+.RE
+.P 
+Cause any client which connects to receive
+the rule chain 
+.BR "%rue: allow" ,
+causing it to disconnect from the 
+server and allow all events, provided
+the application author has
+set the 
+.B IDSA_F_UPLOAD 
+flag.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR mod_chain (8),
+.BR idsad (8).

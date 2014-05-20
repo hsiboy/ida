@@ -1,0 +1,62 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_interactive.8
+.\"
+.TH MOD_INTERACTIVE 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+%interactive \- IDS/A module allowing an operator to make access control decisions
+.SH SYNOPSIS
+.B %interactive 
+.I socket timeout fallback
+.SH DESCRIPTION
+.B %interactive
+makes it possible for a human operator to make access control decisions using
+.BR idsaguardtty (8)
+or 
+.BR idsaguardgtk (8).
+.I socket 
+is the path of the unix domain socket used to communicate requests between
+.BR idsad (8) 
+and  
+.BR idsaguardgtk (8)
+or 
+.BR idsaguardtty (8).
+.I timeout 
+specifies the number of seconds to wait for the human operator to make a decision.
+.I fallback 
+is either 
+.B failopen
+which configures the module to return true if a request times out or no operator is present, or
+.B failclosed
+which has the opposite effect.
+.SH EXAMPLE
+.RS
+scheme tcpd & name connect & ! %interactive /root/tcpd-idsa 5.0 failopen: 
+  deny
+.RE
+.P 
+Allow the operator to block the requests made by the tcpwrapper replacement
+.BR idsatcpd (8)
+by running 
+.B "idsaguardtty /root/tcpd-idsa"
+.SH SECURITY
+Unlike the sockets of the core daemon
+.BR idsad (8) 
+the socket of 
+.B mod_interactive
+does not provide internal access controls. Hence external, file system 
+protection is necessary - the socket should
+be created in a directory which is only accessible to 
+authorized users.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR idsaguardtty (8),
+.BR idsaguardgtk (8),
+.BR idsad (8).

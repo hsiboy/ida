@@ -1,0 +1,87 @@
+# Edit by hand if necessary
+
+PROJECT       = idsa
+VERSION       = 0.96.2
+
+# prefixes, used by install destinations
+prefix        = @prefix@
+exec_prefix   = @exec_prefix@
+
+# install destinations
+BINDIR        = @bindir@
+SBINDIR       = @sbindir@
+LIBDIR        = @libdir@
+INCLUDEDIR    = @includedir@
+MANDIR        = @mandir@
+SYSCONFDIR    = @sysconfdir@
+LOCALSTATEDIR = @localstatedir@
+DATADIR       = @datadir@
+
+# use configure --help to set the options in the paragraph below ########################
+
+# build apache module
+APXS          = @APXS@
+
+# detect guile
+GUILECONFIG   = @GUILECONFIG@
+
+# detect pam
+PAMDIR        = @PAMDIR@
+
+# build dynamic modules
+DLLIB         = @DLLIB@
+DLDIR         = @DLDIR@
+
+# distribute modules over shared and static. mod_default should always be static
+STATICMODULES = default log
+SHAREDMODULES = example1 example2 diff true regex pipe send time keep sad counter timer interactive truncated exists type chain length constrain
+# no point in building shared objects if DL interface not implemented
+ifeq ($(DLDIR),no)
+STATICMODULES += $(SHAREDMODULES)
+endif
+
+# enable standout in idsaguardtty
+STANDOUT      = @STANDOUT@
+
+# build idsaguardgtk
+GTKCONFIG     = @GTKCONFIG@
+
+# build idsaklogd
+KLOG          = @KLOG@
+
+# build idsatcp{,log}d
+GNUNET        = @GNUNET@
+
+# use static configuration files
+FALLBACK      = @FALLBACK@
+
+#########################################################################################
+
+# definitions, used to decide if struct ucred needs to be faked
+CDEFS         = @DEFS@
+
+# essential stuff to build the system
+CC            = @CC@
+CFLAGS        = -Wall @CFLAGS@
+LN            = @LN_S@
+RANLIB        = @RANLIB@
+AR            = @AR@
+
+# programs to install the system (actually grep and chmod are optional)
+SED           = @SED@
+LDCONFIG      = @LDCONFIG@
+CHMOD         = @CHMOD@
+GREP          = @GREP@
+CP            = @CP@
+INSTALL       = ../@top_srcdir@/tools/install.sh
+WARN          = ../@top_srcdir@/tools/warn.sh
+
+# not so essential programs
+RM            = rm -f
+TAR           = tar
+INDENT        = indent -kr -i2 -l0
+CI            = ci -mcheckpoint -Nidsa-$(subst .,-,$(VERSION))
+AUTOCONF      = autoconf
+
+# bah, we can do without defaults
+.SUFFIXES:

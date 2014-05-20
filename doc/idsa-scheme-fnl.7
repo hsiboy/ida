@@ -1,0 +1,59 @@
+'\" tp
+.\" Process this file with
+.\" groff -t -p -man -Tascii idsa-scheme-fnl.7
+.\"
+.TH IDSA-SCHEME-FNL 7 "APRIL 2003" "IDS/A System"
+.SH NAME
+IDS/A Functionality Scheme
+
+.SH DESCRIPTION
+
+.PP
+
+This page describes a simple, discrete functionality labelling
+abstraction. A similar, continuous approximation can be implemented
+using the required
+.B arisk
+field, with important functions having a high cost to availabilty
+if denied.
+
+.SH FIELDS
+
+.IP IDSA_FNL_LEVEL
+The functionality level of the current event, with essential operations
+starting at 0
+
+.IP IDSA_FNL_MAX
+The highest functionality level
+
+.SH EXAMPLES
+
+.RS
+.nf
+struct sockaddr_in sa;
+ ...
+idsa_set(c, "http-request", "samplehttpd", 1,
+    ...
+    "client-ip", IDSA_T_SADDR, &sa,
+    "http-method", IDSA_T_STRING, "GET",
+    IDSA_FNL, IDSA_T_INT, 0,
+    NULL);
+ ...
+idsa_set(c, "http-request", "samplehttpd", 1,
+    ...
+    "client-ip", IDSA_T_SADDR, &sa,
+    "http-method", IDSA_T_STRING, "MKCOL",
+    IDSA_FNL, IDSA_T_INT, 3,
+    NULL);
+.fi
+.RE
+.P
+
+.PP
+Report a basic function as well as a less frequently used extension.
+
+.SH SEE ALSO
+
+.BR idsa_set (3),
+.BR idsa_scan (3),
+.BR idsad (8).

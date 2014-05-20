@@ -1,0 +1,13 @@
+# rule to trigger on the first event
+scheme:string mo & name:string eenie :
+    log file /dev/tty, format syslog ; 
+    allow
+
+# rule to trigger on the second event
+scheme:string mo & %regex name "\^m.*i" :
+# normally this would be a log file, eg
+#log file /tmp/test1-logfile, format xml ;
+#log file /tmp/test2-logfile, custom "%{time}: %{name}^J", rotate 10000;
+#log pipe "/usr/local/sbin/idsapipe -f native -l -t 3 /usr/bin/wall" ;
+    deny ;
+    log file /dev/tty, format internal 

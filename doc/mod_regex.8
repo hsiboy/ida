@@ -1,0 +1,37 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_regex.8
+.\"
+.TH MOD_REGEX 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+%regex \- IDS/A module matching an event field against a regular expression
+.SH SYNOPSIS
+.B %regex 
+.I field expression
+.SH DESCRIPTION
+The
+.B %regex
+module returns true if the regular expression
+.I expression
+matches the value of the field 
+.I field. 
+Matches are case insensitive. If an event 
+does not contain the field this module returns false.
+.SH EXAMPLE
+.RS
+scheme syslog & %regex message "fail.*login" : 
+  log file /var/log/idsa/failed-login
+.RE
+.P 
+Log syslog messages relating to failed logins.
+.RS
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR idsad (8).

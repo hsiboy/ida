@@ -1,0 +1,46 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_chain.8
+.\"
+.TH MOD_CHAIN 8 "APRIL 2003" "IDS/A System"
+.SH NAME
+%chain \- IDS/A module to identify a rule chain 
+.SH SYNOPSIS
+.B "%chain [ server | pre | fail | auto ]"
+.SH DESCRIPTION
+Usually a list (chain) of IDS/A rules is evaluated 
+by the server process 
+.BR idsad (8).
+However, it is possible to transfer rules
+into applications if the flag
+.B IDSA_F_UPLOAD
+has been set in the call to
+.BR idsa_open (3)
+using 
+.BR mod_send (8).
+.B %chain
+can be used by rules which need to test in which
+context they are being evaluated: 
+.IP server
+Rule is evaluated in server process
+.BR idsad (8)
+.IP auto
+Rule is evaluated in an application operating
+autonomously
+.IP pre
+Rule is evaluated as a prefilter
+.IP fail
+Rule is evaluated as fallback in case 
+.BR idsad (8)
+is inaccessible
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR mod_send (8),
+.BR idsad (8).

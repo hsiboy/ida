@@ -1,0 +1,56 @@
+Quick and Dirty module interface summary. You do want to look at the 
+code.
+
+Modules are implemented in a similar way to the Linux VFS drivers 
+or the apache modules.
+
+Each module should export a function called
+idsa_module_load_foo() where foo should also be the name
+of the final module (eg mod_foo.so).
+
+When invoked idsa_module_load_foo() should return a structure
+which contains a set of function pointers which implement 
+some functionality. The following functions can be implemented
+by a module. Not all functions need to be implemented - some
+modules only implement test_*, others only action_*. 
+
+Idsascaffold can be used to test individual modules.
+
+IDSA_MODULE_GLOBAL_START global_start;
+IDSA_MODULE_GLOBAL_BEFORE global_before;
+IDSA_MODULE_GLOBAL_AFTER global_after;
+IDSA_MODULE_GLOBAL_STOP global_stop;
+
+IDSA_MODULE_TEST_START test_start;
+IDSA_MODULE_TEST_CACHE test_cache;
+IDSA_MODULE_TEST_DO test_do;
+IDSA_MODULE_TEST_STOP test_stop;
+
+IDSA_MODULE_ACTION_START action_start;
+IDSA_MODULE_ACTION_CACHE action_cache;
+IDSA_MODULE_ACTION_DO action_do;
+IDSA_MODULE_ACTION_STOP action_stop;
+
+See mod_true for a very simple test module which always returns 
+true. More complex examples are in mod_example1 and mod_example2.
+
+global_start is invoked once when the module loaded to initialise
+global information - if state should be made available to other
+functions, global start should return the state structure. global_stop
+is called once the module is terminated and can deallocate the
+global state. global_before and global_after are invoked once for
+each event before and after all action_do or test_do functions.
+
+test_* functions are used in the head of a rule (before ':') and need
+to be prefixed by a '%' (eg %true: log file ...), while action_*
+functions are used to implement functionality for a rule body and
+do not require a '%' prefix. For example 'log' is actually implemented
+as mod_log linked into libidsa.
+
+*_start and *_stop allocate and deallocate instances (with local
+state). *_do performs the test or action while *_cache is used
+to prevent the creation of duplicate instances: It is called 
+in place of *_start and receives a previously created instance 
+and should test if the instance about to be created is identical
+to it - if it is, the previous instance can be used and no new
+instance will be created, otherwise *_start will be called as usual.

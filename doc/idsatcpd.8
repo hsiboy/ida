@@ -1,0 +1,39 @@
+.\" Process this file with
+.\" groff -man -Tascii idsatcp.8
+.\"
+.TH IDSATCPD 8 "JULY 2000" "IDS/A System"
+.SH NAME
+idsatcpd \- simple tcp wrapper replacement
+.SH SYNOPSIS
+.B idsatcpd
+.B [ [-ra|-rc|-ri] 
+.I risk
+.B ] [-s 
+.I service 
+.B ] 
+.I in.program 
+.B [ in.options ]
+.SH DESCRIPTION
+.B idsatcpd
+is a simple tcp wrapper replacement. Only TCP and IPv4 are supported.
+.SH OPTIONS
+.IP -ra
+specify the risk/cost to availability posed by granting this request
+.IP -rc
+specify the risk/cost to confidentiality
+.IP -ri
+specify the risk/cost to integrity
+.IP -s
+change the service field reported from the default 
+.B tcpd
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad (8),
+.BR tcpd (8).

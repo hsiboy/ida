@@ -1,0 +1,12 @@
+
+The conventional logger was not designed to check the messages sent to 
+it, so a creative attacker can insert misleading information into the
+system log, eg:
+
+echo -ne "<13>Dec 12 42:41:40 login[42]: ROOT LOGIN on \`tty7'\0" | idsasocket /dev/log
+
+In contrast idsasyslogd will try to write proper time, process id and user
+identity. This makes the logs more reliable and reduces chance that an 
+attacker frames an innocent bystander.
+
+Idsasocket assumes a stream unix domain socket.

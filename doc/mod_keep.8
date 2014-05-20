@@ -1,0 +1,93 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_keep.8
+.\"
+.TH MOD_KEEP 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+keep \- IDS/A module to remember values
+.SH SYNOPSIS
+.B [%] keep 
+.I field 
+.B [ : 
+.I type 
+.B ] 
+.I name 
+.B [, size
+.I number
+.B ] [, timeout 
+.I seconds
+.B ] [, file
+.I path 
+.B ]
+.sp
+.SH DESCRIPTION
+.B keep
+is used to construct sets of values.
+When 
+.B %keep 
+is used in a rule head it returns
+true if an event field value is part of the set. If
+.B keep 
+is used in a rule body it adds the field value to 
+the set.
+.I field
+is name of an event field, such as 
+.B pid 
+or 
+.BR scheme ,
+while
+.I type
+is the type of the field - this is necessary
+if the field is not one of the required
+fields. See 
+.BR idsa_types (3)
+for a list of types.
+.I name 
+is the set identifier.
+.SH OPTIONS
+.IP "size number"
+The number of elements in the set. Replacement
+is on a FIFO basis.
+.IP "timeout seconds"
+The number of seconds for an element to remain 
+in the set.
+.IP "file path"
+The file in which to save the set between
+restarts of 
+.BR idsad (8).
+.SH EXAMPLE
+.RS
+scheme syslog & %keep message:string duplicates, size 128, file /var/state/idsa/duplicates: 
+  keep message:string duplicates
+.sp
+scheme syslog: 
+  log file /var/log/idsa/syslog-no-dups, format syslog ; 
+  keep message:string duplicates
+.RE
+.P 
+Filters out duplicate entries before writing them to 
+.I /var/log/idsa/syslog-no-dups. 
+In the first rule the value of the
+.I message 
+field of incoming events is compared to those saved in the set 
+.IR duplicates .
+If it matches it is added again to the head of the FIFO 
+but not written to log file.
+The second rule logs events which did not match the first rule
+in syslog format and also adds them to the set
+.I duplicates
+to trap later repeats. Between restarts the contents of the 
+.I duplicates
+set is saved to the file
+.IR /var/state/idsa/duplicates .
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR mod_log (8),
+.BR idsad (8).

@@ -1,0 +1,51 @@
+.\" Process this file with
+.\" groff -man -Tascii idsaklogd.8
+.\"
+.TH IDSAKLOGD 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+idsaklogd \- kernel log interface to idsa
+.SH SYNOPSIS
+.B idsaklogd [-knp]
+.B [-i 
+.I username
+.B ] [-r 
+.I directory
+.B ]
+.SH DESCRIPTION
+.B idsaklogd
+collects kernel log messages via 
+.I /proc/kmsg
+and sends them to 
+.BR idsad (8)
+for further processing.
+.SH OPTIONS
+.IP -h
+Print a terse help message
+.IP -k
+Kill and replace an already running 
+.B idsaklogd
+instance. This is an alternative to 
+.B SIGHUP
+as 
+.B idsaklogd 
+should be run in a chrooted environment and reduced privilege
+.IP -n
+Do not fork into background
+.IP -p
+Do not disable console messages at startup
+.IP "-i username"
+Run as specified user instead of root. Group is determined from 
+password file entry
+.IP "-r directory"
+Chroot to specified directory
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad (8),
+.BR klogd (8).

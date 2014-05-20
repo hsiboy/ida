@@ -1,0 +1,37 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_exists.8
+.\"
+.TH MOD_EXISTS 8 "DECEMBER 2002" "IDS/A System"
+.SH NAME
+%exists \- IDS/A module to check if a given field exists
+.SH SYNOPSIS
+.B %exists 
+.I name
+.SH DESCRIPTION
+.B %exists
+is used to construct rule heads which test if an
+event contains a field with a particular
+.IR name .
+.SH EXAMPLE
+.nf
+.RS
+%exists foo : 
+  log file /var/log/foo, custom "%{time}: Foo present, value is %{foo}^J"
+.fi
+.RE
+.P 
+Log all events containing a field with the 
+.I name 
+.B foo 
+to file in a format containing time and the field value.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR idsad (8).

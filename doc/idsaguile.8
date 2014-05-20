@@ -1,0 +1,64 @@
+.\" Process this file with
+.\" groff -man -Tascii idsaguile.8
+.\"
+.TH IDSAGUILE 8 "JULY 2000" "IDS/A System"
+.SH NAME
+idsaguile \- scheme interpreter to analyze events
+.SH SYNOPSIS
+.B idsaguile [-f]
+.B [-i 
+.I username
+.B ] [-r 
+.I directory
+.B ] 
+.I script
+.SH DESCRIPTION
+.B idsaguile
+is intended to be started as a subprocess of 
+.BR idsad (8) 
+to perform more complex checks on incoming events.
+On startup 
+.B idsaguile 
+reads the guile script given on its commandline. The
+script should define a function called
+.B idsa()
+which accepts a single list as argument and returns a
+boolean. This function will be called to determine if 
+its rule in 
+.BR idsad.conf (5)
+should be triggered by an event.
+The list as argument to
+.B idsa()
+will contains one element for each label value 
+tuple of the event. The label value pair itself is a sublist
+of 3 elements, the first is the label, the second
+its type and the third its value. 
+.SH OPTIONS
+.IP -f
+Disallow forks for this process. In case 
+.B idsaguile
+is subverted by an attacker, the attacker will only
+be able to run a single process (provided the -i 
+option is also used)
+.IP -h
+Print a terse help message
+.IP "-i username"
+Run as specified user instead of root. Group is determined from 
+password file entry
+.IP "-r directory"
+Chroot to specified directory. Note that the 
+.BR chroot (2)
+system call occurs before the guile interpreter initializes. This 
+means that the guile script given on the command-line and any guile 
+support files need to be a copied into the chroot environment
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad (8),
+.BR guile (1).

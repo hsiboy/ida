@@ -1,0 +1,60 @@
+# This idsad.conf contains signatures for suspicious activity
+# Matching events are written to /usr/local/var/log/idsa/warnings
+#
+# Remember to replace /usr/local/apache in the signatures below
+
+# Report hosts which connect to ssh for the first time
+service tcplog 
+  & portdst:port tcp/ssh 
+  & ! %keep ip4src:addr ssh, size 32, file /var/state/idsa/ssh :
+  keep ip4src:addr ssh;
+  log file /usr/local/var/log/idsa/warnings,
+    custom "%{time:102} ssh connection from %{ip4src}. This host does not normally connect to our ssh service^J" 
+
+# If idsatcplogd is started with the -A option we get to 
+# see stealth scans to unbound ports. Rate limiting can be
+# with %keep, %counter and %timer
+#
+# (! %timer throttle) &
+service tcplog & tcpsyn:flag 0:
+# timer throttle 2;
+  log file /usr/local/var/log/idsa/warnings,
+    custom "%{time:102} traffic from %{ip4src} to %{portdst}. This port should not be active^J" 
+
+# The user nobody should not execute setuid programs
+service snoopy & uid nobody & (
+    filename:file /bin/su 
+  | filename:file /usr/sbin/traceroute
+# | %truncated filename
+):
+#  deny;
+  log file /usr/local/var/log/idsa/warnings,
+    custom "%{time:102} user nobody has attempted to execute setuid binary %{filename}, possible compromise^J" 
+
+# automated scanner 
+service apache & name request & (
+    filename:file /usr/local/apache/cgi-bin/printenv 
+  | filename:file /usr/local/apache/cgi-bin/test-cgi
+):
+  log file /usr/local/var/log/idsa/warnings,
+    custom "%{time:102} host %{ip4src} requested script %{url}, probably a scanner^J" 
+
+# spammer looking for a relay
+service apache & name request & filename:file /usr/local/apache/cgi-bin/formail.pl :
+  log file /usr/local/var/log/idsa/warnings,
+    custom "%{time:102} host %{ip4src} requested script %{url:1}, probably a spammer^J" 
+
+# windows scanner
+service apache & name request & filename:file /usr/local/apache/scripts :
+  log file /usr/local/var/log/idsa/warnings,
+    custom "%{time:102} host %{ip4src} requested script %{url:1}, probably a windows scanner^J" 
+
+# long urls which hit our size limit - could be bad news
+service apache & name request & %truncated url :
+  log file /usr/local/var/log/idsa/warnings,
+    custom "%{time:102} host %{ip4src} issued long request for %{url:1}, could be a buffer overflow^J" 
+
+# system reboot
+scheme klog & %regex message "Linux version" & uid root :
+  log file /usr/local/var/log/idsa/warnings,
+    custom "%{time:102} operating system restart^J" 

@@ -1,0 +1,125 @@
+'\" t
+.\" Process this file with
+.\" groff -t -man -Tascii idsa.1
+.\"
+.TH IDSA 1 "March 2003" "IDS/A System"
+.SH NAME
+idsa \- idsa system overview
+.SH SYNOPSIS
+.B idsa
+is a combined intrusion detection, access control
+and logging system for applications. Its documentation
+is distributed over several manual pages.
+
+.SH ADMINISTRATION
+
+The following pages describe the runtime:
+
+.\" Yuck - tables don't allow symbolic .BR
+
+.TS
+tab(@);
+lB l.
+idsad\fR(8)           @ Master daemon
+idsad.conf\fR(5)      @ Master configuration file
+idsaexec\fR(8)        @ Utility to run commands from \fBidsad\fR(8)
+idsapipe\fR(8)        @ Utility to relay events from \fBidsad\fR(8)
+idsaguile\fR(8)       @ Interface to \fBguile\fR(1)
+idsapid\fR(8)         @ RC support for master daemon
+idsaguardgtk \fR(8)   @ GTK utility for interactive control
+idsaguardtty\fR(8)    @ TTY utility for interactive control
+.TE
+
+Documentation for selected modules loaded by 
+.BR idsad (8)
+to perform analysis and response tasks:
+  
+.TS
+tab(@);
+lB l.
+mod_chain\fR(8)       @ Identify a rule chain
+mod_constrain\fR(8)   @ String anomaly detector
+mod_counter\fR(8)     @ Set and test counters
+mod_exists\fR(8)      @ Test if a field exists
+mod_interactive\fR(8) @ Interface to \fBidsaguardgtk\fR(8) or \fBidsaguardtty\fR(8)
+mod_keep\fR(8)        @ Retain state
+mod_length\fR(8)      @ Measure field sizes
+mod_log\fR(8)         @ Write to file or subprocess
+mod_regex\fR(8)       @ Match regular expression
+mod_send\fR(8)        @ Return extra data to application
+mod_time\fR(8)        @ Match a given time
+mod_timer\fR(8)       @ Match a given period
+mod_true\fR(8)        @ Always match
+mod_truncated\fR(8)   @ Test for incomplete fields
+mod_type\fR(8)        @ Determine field type
+.TE
+
+.SH DEVELOPMENT
+
+The following pages document the API used
+to add 
+.B idsa
+support to applications:
+
+Higher Level C API:
+
+.TS
+tab(@);
+lB l.
+idsa_open\fR(3)  @ Initialise interface
+idsa_close\fR(3) @ Terminate interface
+idsa_set\fR(3)   @ Report an event
+idsa_types\fR(4) @ Type information
+.TE
+
+Shell interface:
+
+.TS
+tab(@);
+lB l.
+idsalog\fR(1)    @ Report and request permission to perform an action
+.TE
+
+.SH ABSTRACTIONS
+
+Frameworks to report activity in a form less dependent on
+the application domain:
+
+.TS
+tab(@);
+lB l.
+idsa-scheme-am\fR(7)   @ Access control abstraction
+idsa-scheme-clf\fR(7)  @ HTTP common logging format
+idsa-scheme-err\fR(7)  @ Error reporting abstraction
+idsa-scheme-fnl\fR(7)  @ Functionality labelling
+idsa-scheme-ldm\fR(7)  @ Logging data map
+idsa-scheme-rq\fR(7)   @ Resource control
+idsa-scheme-ssm\fR(7)  @ State management
+.TE
+
+.SH MISCELLANEOUS
+
+Replacements and utilities:
+
+.TS
+tab(@);
+lB l.
+idsaklogd\fR(8)        @ Kernel logger replacement
+idsarlogd\fR(8)        @ Remote syslog replacement
+idsasyslogd\fR(8)      @ Local syslog replacement
+idsatcpd\fR(8)         @ TCP wrapper replacement
+idsatcplogd\fR(8)      @ TCP connection logger
+.TE
+
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with
+the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR FSF "(Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad (3),
+.BR idsad.conf (5).

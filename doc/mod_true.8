@@ -1,0 +1,40 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_true.8
+.\"
+.TH MOD_TRUE 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+%true \- IDS/A module always returning true
+.SH SYNOPSIS
+.B %true
+.SH DESCRIPTION
+.B %true
+is used to construct rule heads which always
+trigger.
+.SH EXAMPLES
+.RS
+%true: 
+  log file /var/log/everything ; 
+  continue
+.RE
+.P 
+Log everything and continue rule evaluation. Useful
+to add at the head of a list of rules.
+.RS
+.P
+%true: deny
+.RE
+.P 
+Disallow everything. Useful at the end of a rule 
+list to change the default behaviour from allow to deny, 
+if care is taken to allow connect events.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR idsad (8).

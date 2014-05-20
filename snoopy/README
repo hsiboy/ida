@@ -1,0 +1,30 @@
+This is a modified version of snoopy 1.2 by Marius Aamodt 
+Eriksen <marius@linux.com> and Mike Baker <mbm@linux.com>
+which uses idsa instead of syslog.
+
+Snoopy is library which is preloaded to intercept calls to execve
+and execv. Snoopy can be used on a per process basis using the 
+LD_PRELOAD environment variable, or globally using /etc/ld.so.preload.
+
+Per Process Example:
+
+  LD_PRELOAD=/usr/local/lib/snoopy.so /bin/bash
+
+Global Example:
+
+  echo /usr/local/lib/snoopy.so>>/etc/ld.so.preload;chmod 644 /etc/ld.so.preload;/bin/bash
+
+WARNING: A dedicated attacker can bypass snoopy and make the system call
+directly. Do not depend on snoopy to block or log all processes.
+
+WARNING: For the global installation snoopy.so will have to be accessible at
+system startup, on the root partition. In other words run 
+
+  ./configure --libdir=/lib
+
+if /usr or /usr/local are a separate partition and you want to use snoopy
+globally.
+
+WARNING: Using idsaexec in conjunction with a globally installed snoopy.so
+may result in a fork bomb if there are cyclic dependencies - if idsaexec is 
+triggered in response to an execv[e].

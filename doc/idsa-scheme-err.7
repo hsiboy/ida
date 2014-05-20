@@ -1,0 +1,90 @@
+'\" tp
+.\" Process this file with
+.\" groff -t -p -man -Tascii idsa-scheme-err.7
+.\"
+.TH IDSA-SCHEME-ERR 7 "APRIL 2003" "IDS/A System"
+.SH NAME
+IDS/A Error Reporting Scheme
+
+.SH DESCRIPTION
+
+.PP
+
+This page documents an abstraction which describes errors and their location.
+The abstraction considers the entity reporting the errors to be part of a
+layered design, where errors may occur above, inside, adjacent and below the
+reporting system.
+
+.PS
+"USAGE" ; down ; move .1 ; line <-> 
+box wid 2 "INTERNAL / UNHANDLED" ; right ; line <-> from right of last box ; move ; "PROTOCOL"
+down ; line <-> from bottom of last box ; move .1 ; "SYSTEM"
+.PE
+
+Supplementary fields
+.BR IDSA_ES_SYS_ERRNO ,
+.B IDSA_ES_SYS_EXIT 
+and
+.B IDSA_ES_PRO_HTTP
+provide more detailed information for particular subsystems.
+
+.SH FIELDS
+
+.IP IDSA_ES
+The type of error reported. It should have one
+of the following value strings:
+
+.RS
+.IP IDSA_ES_USAGE    
+Failure at user interface (layer above reporting system)
+.IP IDSA_ES_SYSTEM 
+Failure at infrastructure (layer below reporting system)
+.IP IDSA_ES_PROTOCOL  
+Failure at logical peer (system at same layer, external to reporting system)
+.IP IDSA_ES_UNHANDLED 
+Anticipated but unhandled condition internal to reporting system
+.IP IDSA_ES_INTERNAL
+Unanticipated failure internal to reporting system
+.IP IDSA_ES_OTHER
+Other or unknown type of error
+.RE
+
+.IP IDSA_ES_SYS_ERRNO 
+Unix error number associated with error, listed in 
+.I /usr/include/errno.h 
+
+.IP IDSA_ES_SYS_EXIT
+Unix exit code associated with error, listed in 
+.I /usr/include/sysexists.h 
+
+.IP IDSA_ES_PRO_HTTP
+RFC2068 HTTP error status codes 
+
+.SH EXAMPLE
+
+.RS
+.nf
+struct sockaddr_in sa;
+int status;
+ ...
+status = 401; /* not authorised */
+ ...
+idsa_set(c, "not-found", "samplehttpd", 0,
+    IDSA_R_MINOR, IDSA_R_NONE, IDSA_R_NONE,
+    "client-ip", IDSA_T_SADDR, &sa,
+    IDSA_ES, IDSA_T_STRING, IDSA_ES_PROTOCOL,
+    IDSA_ES_PRO_HTTP, IDSA_T_INT, &status,
+    ...
+    NULL);
+.fi
+.RE
+.P
+
+.PP
+Report a request for an entity which the peer is not permitted to access.
+
+.SH SEE ALSO
+
+.BR idsa_set (3),
+.BR idsa_scan (3),
+.BR idsad (8).

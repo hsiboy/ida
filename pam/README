@@ -1,0 +1,30 @@
+MODULE NAME:
+  pam_idsa
+
+DESCRIPTION:
+  asks idsad for permission to allow or deny. Might be useful to 
+  overrule suspicious login attempts and correlate against other events
+  such as connects to other tcp wrappers.
+
+RECOGNIZED ARGUMENTS:
+  failclosed        in case of errors deny access. This option should 
+                    be used in high security settings.
+
+  availability=r    specify a risk/cost to system availability for this
+                    service.
+
+  confidentiality=r specify a risk/cost to system confidentiality for this
+                    service.
+
+  integrity=r       specify a risk/cost to system integrity for this
+                    service.
+
+MODULE SERVICES PROVIDED:
+  auth              authenticate and setcred. setcred left empty
+
+INSTALLATION:
+  install pam_idsa.so into the pam module directory, usually
+  /lib/security or /usr/lib/security. Then add a line to 
+  the service configuration files, usually in /etc/pam.conf
+  or /etc/pam.d. pam_idsa.so reports events to idsad using the
+  pam scheme.

@@ -1,0 +1,11 @@
+# the pam configuration can usually be found in /etc/pam.conf or /etc/pam.d
+
+# normal unix authentication
+auth       required   pam_unix.so nullok
+
+# ask idsad for a second opinion
+auth       required   pam_idsa.so
+
+# other components, account and session not provided by pam_idsa
+account    required   pam_unix.so
+session    required   pam_unix.so

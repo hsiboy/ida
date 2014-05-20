@@ -1,0 +1,72 @@
+.\" Process this file with
+.\" groff -man -Tascii idsasyslogd.8
+.\"
+.TH IDSASYSLOGD 8 "JULY 2000" "IDS/A System"
+.SH NAME
+idsasyslogd \- local syslog interface to idsa
+.SH SYNOPSIS
+.B idsasyslogd [-hkln]
+.B [-i 
+.I username
+.B ] [-m
+.I connection table size
+.B ] [-p 
+.I unix listen socket
+.B ] [-r 
+.I directory
+.B ]
+.SH DESCRIPTION
+.B idsasyslogd
+receives syslog messages from a single unix domain socket (default
+.I /dev/log
+). The messages are then parsed and forwarded to 
+.BR idsad (8)
+for further processing.
+.SH OPTIONS
+.IP -h
+Print a terse help message
+.IP "-i username"
+Run as specified user instead of root. Group is determined from 
+password file entry
+.IP -k
+Kill and replace an already running 
+.B idsasyslogd
+instance. This is an alternative to 
+.B SIGHUP
+as 
+.B idsasyslogd 
+should be run in a chrooted environment and reduced privilege
+.IP "-m integer"
+Specify the total maximum number of connections
+.B idsasyslogd 
+will handle at the same time. Specifying a number larger
+that the total available file descriptors is inadvisable
+.IP -n
+Do not fork into background
+.IP "-p socket"
+Listen to the specified socket for syslog messages instead of the default
+.IR /dev/log .
+To listen on multiple sockets start several instances
+of 
+.B idsasyslogd 
+listening on different sockets
+.IP "-r directory"
+Chroot to 
+.I directory
+.SH FILES
+.I /dev/log
+.RS
+Default listen socket.
+.RE
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with
+the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad (8),
+.BR syslogd (8).

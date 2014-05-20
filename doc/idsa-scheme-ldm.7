@@ -1,0 +1,140 @@
+'\" t
+.\" Process this file with
+.\" groff -t -man -Tascii idsa-scheme-ldm.7
+.\"
+.TH IDSA-SCHEME-LDM 7 "APRIL 2003" "IDS/A System"
+.SH NAME
+IDS/A Logging Data Map Mapping
+
+.SH DESCRIPTION
+
+.PP
+This page lists the event field names which 
+should be passed to 
+.BR idsa_set (3) 
+or 
+.BR idsa_scan (3) 
+to describe security events using the 
+Logging Data Map
+.RB ( LDM )
+proposed by Ranum and Robertson in 
+.IR http://www.ranum.com/logging/logging-data-map.html .
+The explanations are reproduced largely verbatim.
+
+.SH FIELDS
+
+.IP IDSA_LDM_NDATE     
+Normal Date/Time Normalized (ISO8601) Date/Time format. 
+.I Note
+that 
+.B idsa
+also provides a timestamp
+
+.IP IDSA_LDM_SOURCEID  
+Source host identifier
+
+.IP IDSA_LDM_TRANSID   
+Transaction or message identifier
+
+.IP IDSA_LDM_PRIO      
+Snort priority rating in the range 0-11:
+
+.TS
+l l.
+ 0	Not suspicious traffic                 
+ 1	Unknown traffic                        
+ 2	Potentially bad traffic                
+ 3	Attempted information leak             
+ 4	Information leak                       
+ 5	Large scale information leak           
+ 6	Attempted denial of service            
+ 7	Denial of service attack               
+ 8	Attempted user privilege gain          
+ 9	User privilege gain                    
+10	Attempted administrator privilege gain 
+11	Administrator privilege gain           
+.TE
+
+.IP IDSA_LDM_REFS      
+Event-IDs of related records, comma separated in form of message-ID@Source-ID
+
+.IP IDSA_LDM_GEOLOC    
+Geographic location if known or relevant (arbitrary format)
+
+.IP IDSA_LDM_GROUP     
+Grouping for administrative purposes (Arbitrary site private) (e.g.: "sales", "west coast", ...)
+
+.IP IDSA_LDM_RAWMSG    
+Original message text, raw evidence form
+
+.IP IDSA_LDM_DESCRIPT  
+Short description of event (human readable) ("failed login attempt" "message delivery notification" ...)
+
+.IP IDSA_LDM_OPERATION 
+Description of operation performed (arbitrary string: "get file", POST, stat=sent, exec)
+
+.IP IDSA_LDM_PROTO     
+Protocol in use for event (IPV6, TCP, UDP, ICMP, HTTP, HTTPS, FTP, ...)
+
+.IP IDSA_LDM_ALERTMSG  
+Short description of alert (human readable) if appropriate ("Denial of service attack deflected..")
+
+.IP IDSA_LDM_ERRMSG    
+Error message associated with the event, if any
+
+.IP IDSA_LDM_SRCPID    
+Source process ID (if appropriate) of related process
+
+.IP IDSA_LDM_SRCIDENT  
+Source of record (kernel, application, device, app name, or proc name)
+
+.IP IDSA_LDM_SRCUSER   
+User-ID or name of attributed user
+
+.IP IDSA_LDM_TARGUSER  
+User-ID or name of target/victim/destination user if applicable
+
+.IP IDSA_LDM_SRCDEV    
+Source device or host platform (hostname, ip, mac address) identifier
+
+.IP IDSA_LDM_TARGDEV   
+Target device or host platform (hostname, ip, mac address) identifier
+
+.IP IDSA_LDM_SRCCRED   
+Credential presented by source user if any (password, password text, crypto key, cookie)
+
+.IP IDSA_LDM_TARGCRED  
+Credential presented for use at destination if any (password, password text, crypto key, cookie)
+
+.IP IDSA_LDM_SRCPATH   
+Source Pathname (URI, filename, executable to run, ...) (Windows pathnames should include Device: specifier if available)
+
+.IP IDSA_LDM_TARGPATH  
+Target Pathname (URI, filename, executable to run, ...)
+
+.SH EXAMPLE
+
+.RS
+.nf
+struct sockaddr_in sa;
+char *url;
+ ...
+idsa_set(c, "reply", "samplehttpd", 0,
+    IDSA_R_MINOR, IDSA_R_NONE, IDSA_R_NONE,
+    IDSA_LDM_SOURCEID, IDSA_T_SADDR, &sa,
+    IDSA_LDM_PROTO,    IDSA_T_STRING, "HTTP",
+    IDSA_LDM_TARGPATH, IDSA_T_STRING, url,
+    ...
+    NULL);
+.fi
+.RE
+.P
+
+.PP
+Report a web page access.
+
+.SH SEE ALSO
+
+.BR idsa_set (3),
+.BR idsa_scan (3),
+.BR idsad (8).

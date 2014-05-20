@@ -1,0 +1,26 @@
+# Examples of using idsatcpd instead of tcpd for inetd
+# The configuration file for inetd is usually in /etc/inetd.conf
+
+# Note that idsatcpd only supports ipv4/tcp
+#
+# Access control decisions are made in idsad.conf
+# to reload, run idsad -k
+#
+# The default idsad.conf logs tcpd events to 
+# /var/log/idsa/tcpd-*
+#
+
+# For example
+# replace
+ftp      stream  tcp nowait root   /usr/sbin/tcpd /usr/sbin/in.ftpd
+# with
+ftp      stream  tcp nowait root   /usr/local/sbin/idsatcpd /usr/sbin/in.ftpd
+
+# Other examples 
+telnet   stream  tcp nowait root   /usr/local/sbin/idsatcpd -s telnet /usr/sbin/in.telnetd
+finger   stream  tcp nowait nobody /usr/local/sbin/idsatcpd /usr/sbin/in.fingerd
+
+# Probably not wise to run these on a public network
+#exec    stream  tcp nowait root   /usr/local/sbin/idsatcpd /usr/sbin/in.rexecd
+#shell   stream  tcp nowait root   /usr/local/sbin/idsatcpd /usr/sbin/in.rshd
+#login   stream  tcp nowait root   /usr/local/sbin/idsatcpd /usr/sbin/in.rlogind

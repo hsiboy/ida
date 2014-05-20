@@ -1,0 +1,108 @@
+.\" Process this file with
+.\" groff -man -Tascii idsa_types.3
+.\"
+.TH IDSA_TYPES 3 "JULY 2001" "IDS/A System"
+.SH NAME
+IDSA_T_STRING, IDSA_T_INT, IDSA_T_UID, IDSA_T_GID, IDSA_T_PID, IDSA_T_TIME, IDSA_T_FLAG, IDSA_T_RISK, IDSA_T_ERRNO, IDSA_T_HOST, IDSA_T_IP4ADDR, IDSA_T_IPPORT, IDSA_T_FILE, IDSA_T_SADDR \- idsa data types 
+.SH SYNOPSIS
+.nf
+.B #include <idsa.h>
+.sp
+.B IDSA_T_STRING
+.B IDSA_T_INT
+.B IDSA_T_UID
+.B IDSA_T_GID
+.B IDSA_T_PID
+.B IDSA_T_TIME
+.B IDSA_T_FLAG
+.B IDSA_T_RISK
+.B IDSA_T_ERRNO
+.B IDSA_T_HOST
+.B IDSA_T_IP4ADDR
+.B IDSA_T_IPPORT
+.B IDSA_T_FILE
+.B IDSA_T_SADDR
+.fi
+.SH DESCRIPTION
+Each element or unit of an event has a type. The idsa library provides
+functions to read and write these types, either as a text string or 
+in memory representation. For example, 
+.B idsa_scan
+accepts optional arguments of varying types as strings, while
+.B idsa_set
+will accept a pointer to an in memory representation.
+.P
+The following types are available:
+.P
+.TP
+.B IDSA_T_STRING
+Character string of at most 126 bytes. The idsa library
+tries to counter resource exhaustion attacks, the tradeoff
+is a hard size limit for all types.
+.TP
+.B IDSA_T_INT
+C integer
+.TP
+.B IDSA_T_UID
+uid_t
+.TP
+.B IDSA_T_GID
+gid_t
+.TP
+.B IDSA_T_PID
+pid_t
+.TP
+.B IDSA_T_TIME
+time_t
+.TP
+.B IDSA_T_FLAG
+Integer flag
+.TP
+.B IDSA_T_RISK
+Opaque unsigned integer, encoding a risk value in range -1 to 1 and 
+a confidence value in range 0 to 1. 
+.B idsa_risk_make 
+can be used to convert the two floating point values to an
+.B IDSA_T_RISK
+type, while 
+.B idsa_risk_severity
+and 
+.B idsa_risk_confidence
+can be used to extract the values
+.TP
+.B IDSA_T_ERRNO
+C integer
+.TP
+.B IDSA_T_HOST
+Character string of at most 126 bytes
+.TP
+.B IDSA_T_IP4ADDR
+Unsigned long integer with value in host order
+.TP
+.B IDSA_T_IPPORT
+Array of two unsigned integers, first element for protocol, eg 
+.BR IPPROTO_TCP ,
+the second element for the port, eg
+.BR IPPORT_FTP .
+Values are in host order
+.TP
+.B IDSA_T_FILE
+Absolute path to file or directory of at most 126 bytes. If no absolute path is 
+given, the current working directory will be prepended
+and paths normalized
+.TP
+.B IDSA_T_SADDR
+Alternative to 
+.BR IDSA_T_IP4ADDR .
+Takes a pointer to a socket structure
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with
+the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsa_set (3).

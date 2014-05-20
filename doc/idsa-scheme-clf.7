@@ -1,0 +1,84 @@
+'\" t
+.\" Process this file with
+.\" groff -t -man -Tascii idsa-scheme-clf.7
+.\"
+.TH IDSA-SCHEME-CLF 7 "APRIL 2003" "IDS/A System"
+.SH NAME
+IDS/A Common Logfile Format Mapping
+
+.SH DESCRIPTION
+
+.PP
+This page lists the event field names which 
+should be passed to 
+.BR idsa_set (3) 
+or 
+.BR idsa_scan (3) 
+to describe security events using the 
+Common Logfile Format
+.RB ( CLF )
+as documented by Luotonen 
+.I "et al"
+in 
+.IR http://www.w3.org/pub/WWW/Daemon/User/Config/Logging.html .
+
+.SH FIELDS
+
+.IP IDSA_CLF_REMOTEHOST
+Remote hostname (or IP number if no DNS hostname
+is available or name resolution has been disabled)
+
+.IP IDSA_CLF_RFC931
+The remote logname of the user
+
+.IP IDSA_CLF_AUTHUSER
+The username as which the user has authenticated himself
+
+.IP IDSA_CLF_DATE
+Date and time of the request. 
+.I Note
+that 
+.B idsa 
+events also provide a timestamp
+
+.IP IDSA_CLF_REQUEST
+The request line exactly as it came from the client
+
+.IP IDSA_CLF_STATUS
+The 
+.B HTTP
+status code returned to the client
+
+.IP IDSA_CLF_BYTES
+The content-length of the document transferred
+
+.SH EXAMPLE
+
+.RS
+.nf
+struct sockaddr_in sa;
+int bytes, code;
+char *req;
+ ...
+code = 404;
+ ...
+idsa_set(c, "reply", "samplehttpd", 0,
+    IDSA_R_MINOR, IDSA_R_NONE, IDSA_R_NONE,
+    IDSA_CLF_REMOTEHOST, IDSA_T_SADDR, &sa,
+    IDSA_CLF_STATUS,  IDSA_T_INT, &code,
+    IDSA_CLF_BYTES,   IDSA_T_INT, &bytes,
+    IDSA_CLF_REQUEST, IDSA_T_STRING, req,
+    ...
+    NULL);
+.fi
+.RE
+.P
+
+.PP
+Report a web page access.
+
+.SH SEE ALSO
+
+.BR idsa_set (3),
+.BR idsa_scan (3),
+.BR idsad (8).

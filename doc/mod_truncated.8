@@ -1,0 +1,40 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_truncated.8
+.\"
+.TH MOD_TRUNCATED 8 "APRIL 2003" "IDS/A System"
+.SH NAME
+%truncated \- IDS/A module to check if a given field exceeds size limits
+.SH SYNOPSIS
+.B %truncated 
+.I name
+.SH DESCRIPTION
+.B %truncated
+evaluates true if a field exceeds storage size limits.
+.SH EXAMPLE
+.nf
+.RS
+%truncated name : 
+  log file /var/log/warn, custom "%{time}: event name too long: %{name}^J"
+.fi
+.RE
+.P 
+Log events which have a name exceeding the space reserved.
+.SH BUGS
+This module applies to the field types
+.BR string , 
+.BR file and
+.B host 
+only, integer overflows are not reported.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR idsa_types (3),
+.BR mod_length (8),
+.BR idsad (8).

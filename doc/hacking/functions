@@ -1,0 +1,42 @@
+
+/* badly out of date */
+
+int idsa_unit_compare(IDSA_UNIT *a, IDSA_UNIT *b);
+
+Compares two units of the same type. For units of
+differing type results are undefined. Otherwise returns
+one of four values
+
+IDSA_COMPARE_LESS       /* a < b */
+IDSA_COMPARE_EQUAL      /* a == b */
+IDSA_COMPARE_INTERSECT  /* a n b != 0 */
+IDSA_COMPARE_MORE       /* a > b */
+
+Compare intersect is intended for partial matches, 
+for example the risk 0.34 intersects the risk range
+[0.2-0.4], but is not equal. (Some issues with intersect,
+careful).
+
+int idsa_unit_print(IDSA_UNIT *u, char *s, int l);
+
+Write the unit in a human readable representation 
+to string s which is at least l bytes long. Returns
+the number of bytes written on success or -1 on 
+failure (string too short).
+
+int idsa_unit_scan(IDSA_UNIT *u, char *s);
+
+Inserts the content of s, a '\0' terminated 
+string into the value field of unit u. s is a 
+readable representation (though currently not 
+necessarily the same returned by idsa_unit_print).
+returns zero on success and nonzero otherwise.
+
+int idsa_unit_check(IDSA_UNIT *u);
+
+Checks if unit u meets consistency criteria.
+If consistent it returns zero, on failure nonzero.
+Passing an unchecked unit to any of the other 
+functions may result in unpredictable results
+including catastrophic failure.
+

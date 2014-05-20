@@ -1,0 +1,66 @@
+.\" Process this file with
+.\" groff -man -Tascii idsarlogd.8
+.\"
+.TH IDSARLOGD 8 "JULY 2000" "IDS/A System"
+.SH NAME
+idsarlogd \- remote syslog interface to idsa
+.SH SYNOPSIS
+.B idsarlogd [-fkln]
+.B [-b 
+.I local address
+.B ] [-i 
+.I username
+.B ] [-p 
+.I udp port
+.B ] [-r 
+.I directory
+.B ]
+.I authorized host list
+.SH DESCRIPTION
+.B idsarlogd
+receives remote syslog messages via udp socket socket (default
+.I 514
+). The messages are then parsed and forwarded to 
+.BR idsad (8)
+for further processing.
+.SH OPTIONS
+.IP "-b address"
+Bind to the specified address instead of all available ones
+.IP -f
+Log incomplete or corrupted messages
+.IP -h
+Print a terse help message
+.IP "-i username"
+Run as specified user instead of root. Group is determined from 
+password file entry
+.IP -k
+Kill and replace an already running 
+.B idsarlogd
+instance. This should be used instead of a 
+.B SIGHUP
+as 
+.B idsarlogd 
+should be run in a chrooted environment and reduced privilege
+.IP -n
+Do not fork into background
+.IP "-p port"
+Listen to the specified port number for syslog messages instead of the default
+.IR 514 .
+To listen on multiple ports start several instances of 
+.B idsarlogd 
+each listening on a different port
+.IP "-r directory"
+Chroot to specified directory
+.IP "host list"
+Whitespace separated list of hosts from which syslog messages will be accepted
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad (8),
+.BR syslogd (8).

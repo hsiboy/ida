@@ -1,0 +1,115 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_constrain.8
+.\"
+.TH MOD_CONSTRAIN 8 "JANUARY 2003" "IDS/A System"
+.SH NAME
+%constrain \- IDS/A anomaly detection module to trigger on strings 
+abnormally long or containing unusual characters
+.SH SYNOPSIS
+.B %constrain 
+.I label 
+.B "[:"
+.I type
+.B ]
+.I "name violations"
+.B "[, file"
+.I path
+.B ]
+.sp
+.B constrain 
+.I label 
+.B "[:"
+.I type
+.B ]
+.I "name violations"
+.B "[, update] [, file"
+.I path
+.B ]
+.SH DESCRIPTION
+.P
+The module
+.B constrain
+can be used in both rule heads and bodies. 
+.P 
+In a rule head it is used to test if a field value identified by
+.I label 
+.B "[:"
+.I type
+.B ]
+contains characters in a position further to the
+right than previously seen before. If these 
+exceed the threshold given by 
+.I violations
+then the rule triggers. 
+.P
+If used in a rule body, the module updates the constrain
+instance 
+.I name
+so that it no longer triggers on the current field.
+In the rule body a value of 
+.I violations 
+greater than zero increases the update margin.
+The optional parameter 
+.B file
+.I path 
+saves the instance state to file. By default this save
+is only performed when the system is shut down. This can
+be changed using the 
+.B update 
+keyword which forces an immediate save.
+.SH EXAMPLE
+.P
+Consider the below rule list and a sequence of four events each containing the field labelled 
+.B username
+with the respective values
+.BR eenie ,
+.BR meenie , 
+.BR mo 
+and
+.BR catcha :
+.RS
+.sp
+%exists username & %interactive /root/add-names 4.0 failclosed :
+  constrain username:string known-names 0, update, log /var/state/idsa/known-names
+.sp
+%exists username & %constrain username:string known-names 4 :
+  deny;
+  log file /var/log/idsa/odd-names
+.RE
+.P 
+Assume that the first event with 
+.B username:string="eenie" 
+is approved interactively. The second event 
+contains an 
+.B m
+at position 1 not seen before and the letters
+.BR n , 
+.B  i 
+and
+.B e
+each at one position further right than before, yielding a total
+of 4. This does not exceed the violation 
+count, so the second rule does not fire. 
+The same holds for event three with
+.B username:string="mo"
+as its difference amounts to 3.
+However, 
+.B username:string="catcha"
+triggers the rule as it exceeds the limit of 4, 
+given that its last letter 
+.B a
+alone contributes a difference of 6.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR mod_timer (8),
+.BR mod_interactive (8),
+.BR mod_log (8),
+.BR idsad (8).

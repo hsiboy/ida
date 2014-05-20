@@ -1,0 +1,104 @@
+.\" Process this file with
+.\" groff -man -Tascii idsad.8
+.\"
+.TH IDSAD 8 "JULY 2000" "IDS/A System"
+.SH NAME
+idsad \- master daemon of the idsa system
+.SH SYNOPSIS
+.B idsad [-hknuv]
+.B [-f
+.I file
+.B ] [-i 
+.I username
+.B ] [-M
+.I integer
+.B ] [-p
+.I socket ...
+.B ] [-r 
+.I directory
+.B ]
+.SH DESCRIPTION
+.B idsad
+accepts connections from one or more unix domain sockets.
+Security events are read from established connections, processed
+according to a rule set defined in 
+.BR idsad.conf (5)
+and the replies returned.
+.SH OPTIONS
+.IP "-f file"
+Read configuration from 
+.I file
+instead of default
+.I /etc/idsad.conf
+.IP -h
+Print a terse help message
+.IP "-i username"
+Run as specified user instead of root. Group is determined from 
+password file entry
+.IP -k
+Kill and replace an already running 
+.B idsad
+instance. Note that this replacement is atomic, at no point in time
+will the listening sockets be unbound. This option should be used to reconfigure
+.B idsad 
+in place of sending it a
+.BR SIGHUP .
+Reconfiguring or restarting
+.B idsad
+via a signal is not feasible as the running
+.B idsad 
+instance has no way of recovering the privileges it relinquished on
+entering chrooted environment and changing its user identifier
+.IP "-M integer"
+Preallocate memory resources to support the given number of clients.
+In this configuration
+.B idsad 
+will allocate 
+.B no
+memory after initialization --- this should
+prevent memory exhaustion failures. Using a value
+exceeding the number of available file descriptors 
+is inadvisable, as this will disable the mechanism
+which enforces connection quotas on nonroot users
+.IP -n
+Do not fork into background
+.IP "-p socket ..."
+Listen on one or more unix domain sockets. Multiple sockets
+should be separated by unquoted whitespaces. If this option is omitted, 
+.B idsad
+will default to listening on
+.I /var/run/idsa
+.IP "-r directory"
+Chroot to 
+.I directory
+after initialisation
+.IP -u
+Honour umask when creating sockets. Allows the system
+administrator to restrict access to the socket to a given
+group or user. Note that few systems other than Linux 
+honour permission bits for unix domain sockets
+.IP -v 
+Print version number
+.SH FILES
+.I /etc/idsad.conf
+.RS
+Default 
+.B idsad
+configuration file.
+.RE
+.I /var/run/idsa
+.RS
+Default listen socket.
+.RE
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with
+the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR FSF "(Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR syslogd (8).

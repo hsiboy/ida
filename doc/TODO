@@ -1,0 +1,56 @@
+# tasks which require little hacking of idsa internals
+
+guile scripts
+  to do anomaly detection / correlation between events, for 
+  example deny execs of suspicious binaries at strange times, or 
+  only allow logins from new hosts during work hours.
+
+remote output filter   
+  like idsaexec, but instead of executing things send
+  to remote host. Hopefully with encryption.
+remote input 
+  complement of remote output - read from network 
+  and forward it to idsad. Similar to idsasyslogd
+local cryptographic output filter
+  like idsaexec, but write to local file with 
+  rolling hash to detect changes. Maybe public
+  key encryption to ensure confidentiality of logs
+fancy log filter
+  automatic compression, automatic rotation,
+  several directories, different devices
+  allow custom output format [Partially DONE]
+query tool - something like grep or cut
+  select on given field, project fields
+  some sql analogs [Partially DONE with idsascaffold]
+simple remote scanner
+  like idsaexec but poke a remote host
+simple system snapshot
+  like idsaexec but provide a snapshot of
+  system (on certain critical event)
+simple local user scan
+  look at user
+  
+# mangling internals
+fix ugliness in IDSA_UNIT: should 
+  handle variable size strings better.
+Don't cheat with sizeof(IDSA_UNIT)
+Fix io - should have some platform
+  independent representation. [DONE]
+Run arbitrary predicates in rule head [DONE]
+Run external plugins in rule head [DONE]
+  (for advanced pattern matching)
+Fix broken optimizations in rule matching
+
+# interface with other things 
+syslog library wrapper
+tcpd libwrap wrapper
+xopen xdas wrapper
+idwg interface
+
+# documentation
+better config file examples
+manual pages
+home page
+
+# theoretical work
+do risk/cost evaluation for events

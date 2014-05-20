@@ -1,0 +1,54 @@
+include ../Makefile.defs
+
+# Set the path to apache's include and module directories
+#APACHEINCLUDE = /usr/src/apache_1.3.11/src/include /usr/src/apache_1.3.11/src/os/unix
+#APACHEINSTALL = /usr/local/apache/libexec
+# Alternative: Debian keeps things here
+#APACHEINCLUDE = /usr/include/apache-1.3/
+#APACHEINSTALL = /usr/lib/apache/
+
+MODSRC = mod_idsa.c
+MODSO  = mod_idsa.so
+MODO   = mod_idsa.o
+
+CFLAGS += -fPIC -DSHARED_MODULE
+LDFLAGS = -shared
+
+INCLUDE = -I../include $(addprefix -I,$(APACHEINCLUDE))
+LIB     = -L../lib -lidsa $(MORELIBS)
+
+ifdef APACHEINCLUDE
+all: $(MODSO)
+else
+all:
+endif
+
+ifdef APACHEINSTALL
+install: all
+	@$(INSTALL) -m 755 $(MODSO) $(APACHEINSTALL)
+info:
+	@echo "apache 1.3 module          : add 'LoadModule idsa_module $(APACHEINSTALL)/$(MODSO)' to your httpd.conf" 
+	@echo "apache 1.3 module          : add 'IdsaLog On' to your httpd.conf"
+	@echo "apache 1.3 module          : and restart apache"
+else 
+install:
+info:
+endif
+
+$(MODSO): $(MODO)
+	$(CC) $(LDFLAGS) $(MODO) -o $(MODSO) $(LIB)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" $(INCLUDE) -c $< -o $@
+
+checkpoint: indent clean
+	$(CI) -l *.[ch]
+
+indent:
+	$(INDENT) $(MODSRC)
+
+clean:
+	$(RM) *.o *~ core
+
+reallyclean: clean
+	$(RM) $(MODSO)

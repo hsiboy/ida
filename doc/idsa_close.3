@@ -1,0 +1,41 @@
+.\" Process this file with
+.\" groff -man -Tascii idsa_close.3
+.\"
+.TH IDSA_CLOSE 3 "JULY 2001" "IDS/A System"
+.SH NAME
+idsa_close \- destroy an idsa handle
+.SH SYNOPSIS
+.nf
+.B #include <idsa.h>
+.sp
+.BI "int idsa_close(IDSA_CONNECTION *" c ");"
+.fi
+.SH DESCRIPTION
+.B idsa_close
+deallocates the resources associated with the given
+.B idsa
+connection handle.
+.SH "RETURN VALUE"
+Zero on success, nonzero otherwise.
+.SH FILES
+.I /etc/idsad.conf
+.RS
+Default 
+.BR idsad (8)
+configuration file.
+.RE
+.I /var/run/idsa
+.RS
+Default listen socket.
+.RE
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with
+the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsa_open (3).

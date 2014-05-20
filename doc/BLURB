@@ -1,0 +1,72 @@
+
+IDSA is a project to make more sophisticated access 
+controls/intrusion detection part of the 
+infrastructure available to a programmer.
+
+Features of idsad/libidsa
+=========================
+
+- Can run in chroot jail without support 
+  files and without root privilege
+
+- Multiple output formats: 
+    syslog: resembles conventional syslog
+    csv: comma separated values
+    ulm: key=value pairs
+    tulm: key:type=value
+    xml: FBWC
+    user defined
+
+- Accurate reporting of 
+    PID, UID, GID and TIME
+  See fake-log-test for an example of how the normal
+  system logger can be mislead
+
+- Pipe messages to subprocesses
+
+- Rules with conjunction, negation and disjunction
+
+- Rules can include state variables with size and time expiry
+
+- Simple anomaly detection module 
+
+- Reference monitor functionality - request 
+  may be allowed or denied. Decisions can be either
+  made internally using a set of rules similar to 
+  a firewall or using external programs, for example 
+  a scheme interpreter (in idsaguile).
+
+- Dynamically loaded output or test modules
+
+- Access control. Connections may be dropped on 
+  arbitrary criteria.
+
+- Prefilter or autonomous access control decisions
+  in client process space for high performance systems
+
+- Automatic log rotation on log file size without need
+  for cron jobs
+
+Additional utilities
+====================
+
+- idsasyslogd can replace the normal system logger 
+
+- idsarlogd will receive remote syslog messages via UDP
+
+- idsatcplogd is a simple TCP connection logger 
+
+- idsatcpd is a simple replacement for tcpwrappers
+
+- snoopy will log exec library calls
+
+- mod_idsa is an apache 1.3.x module which allows
+  idsa to analyze http requests made to the web server
+
+- pam_idsa is a pluggable authentication module which 
+  can be stacked on the normal ones to override suspicious
+  authentication attempts.
+
+Information from the utilities can be pooled, for example
+a rule using information from the connection logger may
+block access via tcp wrappers and the apache module.

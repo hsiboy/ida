@@ -1,0 +1,72 @@
+mod_idsa
+--------
+
+This module has been written for Apache 1.3.11 but might work for 
+other versions too. This module makes it possible for idsad to 
+make access control decisions for apache requests.
+
+Install
+-------
+
+There are any number of ways to add modules to apache, here 
+are instructions for two:
+
+A: Compile mod_idsa separately if your apache has DSO support enabled
+
+Run 
+
+  configure --with-apxs=/path/to/apxs
+
+or edit ../Makefile.defs and set APXS to point at the apache extension 
+tool, then type
+
+  make install
+
+Sometimes apxs breaks, in that case edit Makefile-noapxs to set the 
+apache paths by hand and then run 
+  
+  make -f Makefile-noapxs install
+
+B: Compile the full apache package with mod_idsa
+
+To build apache with mod_idsa statically you will need to add the module
+and link against libidsa, so add the following two items to the
+configure of apache:
+
+  LIBS=-lidsa ./configure --add-module=/the/path/to/idsa/apache/mod_idsa.c 
+
+You will have to have installed idsa before compiling apache
+
+Enabling idsa support
+---------------------
+
+Stop apache (resist temptation to skip this step and do a restart, it will crash)
+
+  apachectl stop
+
+Add the following line to your httpd.conf
+
+  IdsaLog On
+
+You can optionally also specify risks on a per directory basis, with 
+values between -1.0 and 1.0 to indicate sensitive areas.
+
+<Directory "/usr/local/apache/htdocs">
+  ...
+  IdsaAvailability -0.3/0.2
+  IdsaConfidentiality 0.2/0.7
+  IdsaIntegrity 0.1/0.9
+  ...
+</Directory>
+
+Lastly bring apache up again:
+
+  apachectl start
+
+Events emitted by mod_idsa
+--------------------------
+
+Events are reported as service=apache and scheme=httpd. The sample
+idsad.conf file has a rule which will report anybody who attempts
+attempts to access files in /cgi-bin/. That could be useful when you are
+scanned for several dozen CGI vulnerabilities.

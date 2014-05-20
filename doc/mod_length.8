@@ -1,0 +1,40 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_length.8
+.\"
+.TH MOD_LENGTH 8 "APRIL 2003" "IDS/A System"
+.SH NAME
+%length \- IDS/A module to measure the length of an event field
+.SH SYNOPSIS
+.B %length 
+.I label
+.B [:
+.I type
+.B "] [ < | = | > ]"
+.I integer
+.SH DESCRIPTION
+.B %length
+measures the length of an event field value when converted to a
+string. If the comparison operator is omitted, a test for equality is 
+assumed.
+.SH EXAMPLE
+.nf
+.RS
+%length name < 4 : 
+  log file /var/log/warn, custom "%{time}: very short event name: %{name}^J"
+.fi
+.RE
+.P 
+Log events which have a name of less than 4 characters.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR idsa_types (3),
+.BR mod_truncated (8),
+.BR idsad (8).

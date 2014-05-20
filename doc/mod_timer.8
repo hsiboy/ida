@@ -1,0 +1,52 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_timer.8
+.\"
+.TH MOD_TIMER 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+%timer \- timer module for IDS/A
+.SH SYNOPSIS
+.B %timer
+.I name
+.sp
+.B timer 
+.I name duration
+.SH DESCRIPTION
+.B %timer
+triggers if the named timer is running. The timer is
+set in a rule body to run for 
+.I duration
+seconds.
+.SH EXAMPLE
+.RS
+scheme klog & %regex message "inux.*ersion" : 
+  timer reboot 2 ; continue
+.sp
+%timer reboot: 
+  log file /var/log/dmesg, custom "%{time:100} %{message}^J"
+.RE
+.P 
+Log everything occurring within 2 seconds after reading a kernel 
+log message reported by
+.BR idsaklogd (8) 
+which matched the string 
+.I inux.*ersion
+to the file
+.IR /var/log/dmesg .
+The two rules save the kernel bootup messages.
+.SH BUGS
+The timing subsystem operates at second resolution, thus the 
+intervals may differ by up to a second from the specified
+value.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR mod_regex (8),
+.BR mod_log (8),
+.BR idsad (8).

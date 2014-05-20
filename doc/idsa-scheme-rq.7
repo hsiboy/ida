@@ -1,0 +1,104 @@
+'\" t
+.\" Process this file with
+.\" groff -t -man -Tascii idsa-scheme-rq.7
+.\"
+.TH IDSA-SCHEME-RQ 7 "APRIL 2003" "IDS/A System"
+.SH NAME
+IDS/A Resource Accounting Abstraction
+
+.SH DESCRIPTION
+
+.PP
+This page lists the event field names which 
+should be passed to 
+.BR idsa_set (3) 
+or 
+.BR idsa_scan (3) 
+to describe the resources held by a monitored application. Each
+resource is considered to consist of a number of discrete
+elements which are either allocated/consumed or available for
+allocation/consumption. An application in its simplest form
+would report the resources as a count, using either
+.BR IDSA_RQ_REQUEST ,
+.B IDSA_RQ_RELEASE 
+or
+.B IDSA_RQ_USED 
+as well the field
+.B IDSA_RQ_UNITS
+to describe the entities counted.
+More elaborate systems may also list totals, 
+report unallocated elements and categorise
+resources.
+
+.SH FIELDS
+
+.IP IDSA_RQ_REQUEST  
+The resources which are requested by the application 
+emitting the security event 
+
+.IP IDSA_RQ_RELEASE
+The resources released by the application. This
+field differs from the inverse of the previous one
+in that the release of resources is not
+blocked
+
+.IP IDSA_RQ_USED
+The number of resource items already held by 
+the monitored entity, not counting the ones
+currently being requested or about to be 
+released
+
+.IP IDSA_RQ_FREE
+The number of resource elements which could 
+potentially still be allocated to the requesting
+system
+
+.IP IDSA_RQ_TOTAL
+The overall number of resource elements
+
+.IP IDSA_RQ_UNITS
+The units in which the reported resource elements are measured.
+Loads can be expressed as a number of units per time 
+interval.
+
+.IP IDSA_RQ_CLASS
+The resource type held or consumed. The abstraction proposes
+three major categories (which in turn could be divided further):
+
+.RS
+.IP IDSA_RQ_CTRAFFIC
+Resources related to transfers or communications, such as bytes 
+of network traffic or blocks of disk IO
+.IP IDSA_RQ_CPROCESSOR
+Resources devoted to manipulation or transformation, such 
+as CPU time
+.IP IDSA_RQ_CSTORAGE
+Resources required for storage, such as disk blocks or bytes or RAM
+.RE
+
+.SH EXAMPLE
+
+.RS
+.nf
+int size;
+ ...
+idsa_set(c, "multimedia-reply", "samplehttpd", 1,
+    ...
+    "content-type, IDSA_T_STRING, "video/mpeg",
+    IDSA_RQ_REQUEST, IDSA_T_INT, &size,
+    IDSA_RQ_UNITS, IDSA_T_STRING, "bytes-sent",
+    IDSA_RQ_CLASS, IDSA_T_STRING, IDSA_RQ_CTRAFFIC,
+    NULL);
+.fi
+.RE
+.P
+
+.PP
+Request permission to transfer a video to 
+a client of a given number of bytes.
+
+.SH SEE ALSO
+
+.BR idsa_set (3),
+.BR idsa_scan (3),
+.BR idsad (8).

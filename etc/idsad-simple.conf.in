@@ -1,0 +1,3 @@
+# log and allow everything. Wrap to next file at 10000000 bytes
+
+%true: log file /usr/local/var/log/idsa/everything, rotate 10000000

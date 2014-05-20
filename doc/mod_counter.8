@@ -1,0 +1,68 @@
+.\" Process this file with
+.\" groff -man -Tascii mod_counter.8
+.\"
+.TH MOD_COUNTER 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+%counter \- IDS/A module to set and test counters
+.SH SYNOPSIS
+.B %counter 
+.I name 
+.BI [ value ]
+.sp
+.B counter 
+.I name operation 
+.BI [ value ]
+.SH DESCRIPTION
+The module
+.B counter
+is used in both rule heads and bodies. In a 
+rule head it is used to see if a named counter
+exceeds (is greater) than a certain integer. 
+In a rule body the counter can be incremented,
+decremented or set. 
+.I name
+is an alphanumeric string, 
+.I value
+an integer.
+.I operation
+is either
+.BR increment , 
+.B decrement
+or
+.BR set .
+If the value is omitted 
+in a rule head, the rule matches if the 
+counter is greater than zero. If the 
+value is omitted in a rule body, single 
+increments and decrements are made or
+the counter is set to zero. A zero
+counter can not be decremented further.
+.SH EXAMPLE
+.RS
+scheme syslog & %regex message "breakin attempt" : 
+  counter breakin increment 5 ; continue 
+.sp
+scheme syslog & %counter breakin : 
+  log pipe "/usr/local/sbin/idsapipe -c 1 /usr/bin/wall" ;
+  counter breakin decrement
+.RE
+.P 
+Write syslog messages containing the string 
+.I "breakin attempt"
+and the following four messages to all users. Note
+that 
+.BR wall (1)
+is set to write one event at a time.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad.conf (5),
+.BR mod_regex (8),
+.BR mod_log (8),
+.BR idsad (8).

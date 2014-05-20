@@ -1,0 +1,55 @@
+.\" Process this file with
+.\" groff -man -Tascii idsatcplogd.8
+.\"
+.TH IDSATCPLOGD 8 "JULY 2000" "IDS/A System"
+.SH NAME
+idsatcplogd \- simple connection logger
+.SH SYNOPSIS
+.B idsatcplogd [-Akn]
+.B [-a 
+.I list of port numbers
+.B ] [-i 
+.I username
+.B ] [-r 
+.I directory
+.B ]
+.SH DESCRIPTION
+.B idsatcplogd
+logs TCP/IP connection attempts to the local machine. 
+.SH OPTIONS
+.IP -A
+Log all packets, not just those with the SYN flag set, destined to
+unbound reserved ports. If this option is used 
+.B idsatclogd
+should be started after all network servers
+.IP "-a port list"
+Log all packets, not just those with the SYN flag set, destined to 
+the list of port numbers. This and the above option are intended to 
+detect stealth port scans
+.IP -h
+Print a terse help message
+.IP "-i username"
+Run as specified user instead of root. Group is determined from 
+password file entry
+.IP -k
+Kill and replace an already running 
+.B idsatcplogd
+instance. This is an alternative to 
+.B SIGHUP
+as 
+.B idsatcplogd 
+should be run in a chrooted environment and reduced privilege
+.IP -n
+Do not fork into background
+.IP "-r directory"
+Chroot to specified directory
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad (8).

@@ -1,0 +1,8 @@
+
+idsaguardgtk: Interactive Access Control with a GTK GUI
+
+  Requires gtk 1.2.*
+
+idsaguardtty: The same on the console
+
+  Can use ncurses (terminfo) if available

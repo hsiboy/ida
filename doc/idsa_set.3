@@ -1,0 +1,181 @@
+'\" t
+.\" Process this file with
+.\" groff -t -man -Tascii idsa_set.3
+.\"
+.TH IDSA_SET 3 "JULY 2001" "IDS/A System"
+.SH NAME
+idsa_set, idsa_scan \- report an event to the idsa system
+.SH SYNOPSIS
+.B #include <idsa.h>
+.sp
+.BI "int idsa_set(IDSA_CONNECTION *" c ", char *" n ", char *" s ", int " f ", unsigned " ar ", unsigned " cr ", unsigned " ir ", ...);"
+.sp
+.BI "int idsa_scan(IDSA_CONNECTION *" c ", char *" n ", char *" s ", int " f ", unsigned " ar ", unsigned " cr ", unsigned " ir ", ...);"
+.SH DESCRIPTION
+.B idsa_set
+and 
+.B idsa_scan
+create an event from their parameters. This event is then 
+reported to the idsa system via the connection handle
+.IR c .
+.P
+The event name is given in 
+.I n 
+and its scheme or namespace in
+.IR s . 
+The combination of 
+.I n 
+and 
+.I s
+should identify an event uniquely.
+.P
+.I f
+is a flag which indicates whether the application can and will
+honour a request to deny this event. If 
+.I f
+is zero the application won't honour an 
+.BR IDSA_L_DENY , 
+otherwise it will.
+.P
+.IR ar , 
+.I cr
+and 
+.I ir
+contain the risks to availability, confidentiality and integrity associated with permitting 
+the event. Risks are local to an application namespace. Risks can be specified as pair of 
+cost, confidence values using 
+.B idsa_risk_make
+or the following predefined risks can be used:
+.P
+.TS
+l l l l.
+IDSA_R_TOTAL	1.000	0.990	Complete failure
+IDSA_R_PARTIAL	0.500	0.750	Partial failure
+IDSA_R_MINOR	0.250	0.875	Minor failure
+IDSA_R_NONE	0.000	0.990	No significant risk
+IDSA_R_UNKNOWN	0.000	0.000	Unknown risk
+.TE
+.P
+.B idsa_set
+and 
+.B idsa_scan
+only differ in the way optional arguments are handled. Optional arguments
+are given as a triple of 
+.IR name , 
+.I type 
+and
+.I value
+where 
+.I name 
+is a character string, 
+.I type
+an unsigned integer from the set of available types.
+For
+.B idsa_set
+the value is a pointer to the in-memory representation of
+the value while for 
+.B idsa_scan 
+the value is a character string. The last argument passed to 
+both functions has to be 
+.BR NULL .
+.SH "EXAMPLES"
+.RS
+.nf
+pid_t target;
+char *name;
+.br
+idsa_set(c, "kill", "audited-shell", 1, 
+  IDSA_R_PARTIAL, IDSA_R_NONE, IDSA_R_UNKNOWN, 
+  "victim-pid", IDSA_T_PID, &target,
+  "victim-name", IDSA_T_STRING, name,
+  NULL);
+.fi
+.RE
+.P
+Request permission (
+.I f
+set to 
+.BR 1 )
+to terminate the process identified by 
+.IR target . 
+The event poses an elevated risk to availability, little risk 
+to confidentiality and an unknown threat to integrity.
+.sp
+.RS
+.nf
+char *target;
+char *name;
+.br
+idsa_scan(c, "kill", "audited-shell", 1, 
+  IDSA_R_PARTIAL, idsa_risk_make(0.0, 0.99), IDSA_R_UNKNOWN, 
+  "victim-pid", IDSA_T_PID, target,
+  "victim-name", IDSA_T_STRING, name,
+  NULL);
+.fi
+.RE
+.P
+This example has the same effect as the previous one, but
+involves 
+.BR idsa_scan ,
+not
+.BR idsa_set .
+Consequently the process id in the variable
+.I target 
+is represented as a string to be parsed by
+.BR idsa_set .
+Also note that the risk to confidentiality is specified directly using
+.BR idsa_risk_make .
+.P
+.RS
+.nf
+struct sockaddr_in sa;
+char *method, *url;
+.br
+idsa_set(c, "http-request", "samplehttpd", 1, 
+  IDSA_R_UNKNOWN, IDSA_R_PARTIAL, IDSA_R_UNKNOWN, 
+  "client-ip", IDSA_T_SADDR, &sa, 
+  "http-method", IDSA_T_STRING, method, 
+  "url", IDSA_T_STRING, url, 
+  NULL);
+.fi
+.RE
+.P
+This example shows a client request as reported by the web server. The 
+optional fields report the IP address of the client, the method and the 
+requested url. The event poses a partial threat to confidentiality, 
+while the risks to availability and integrity are not rated.
+.SH "RETURN VALUE"
+.B IDSA_L_ALLOW 
+if the event is permitted, 
+.B IDSA_L_DENY 
+if it is to be denied. By default
+an internal failure will generate an
+.B IDSA_L_DENY 
+return value, but this can be changed with the
+.B IDSA_F_FAILOPEN 
+flag to 
+.BR idsa_open .
+.SH FILES
+.I /etc/idsad.conf
+.RS
+Default 
+.BR idsad (8)
+configuration file.
+.RE
+.I /var/run/idsa
+.RS
+Default listen socket.
+.RE
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with
+the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsa_open (3),
+.BR idsa_close (3),
+.BR idsa_types (3).

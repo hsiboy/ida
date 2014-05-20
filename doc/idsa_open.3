@@ -1,0 +1,100 @@
+.\" Process this file with
+.\" groff -man -Tascii idsa_open.3
+.\"
+.TH IDSA_OPEN 3 "JULY 2001" "IDS/A System"
+.SH NAME
+idsa_open \- create an idsa handle
+.SH SYNOPSIS
+.nf
+.B #include <idsa.h>
+.sp
+.BI "IDSA_CONNECTION *idsa_open(char *" name ", char *" credential ", int " flags ");"
+.fi
+.SH DESCRIPTION
+.B idsa_open
+allocates a handle which is used in subsequent calls to 
+.BR idsa_set , 
+.B idsa_scan
+and others. 
+.I name 
+is the name used to identify the client application, 
+.I credential
+a token used for authentication (currently unused, should be 
+.BR NULL ).
+.I flags
+can be used to set zero or more of the following options, bitwise or'd:
+.TP
+.B IDSA_F_FAILOPEN
+Change the behaviour of 
+.BR idsa_log ,
+.B idsa_set
+and 
+.B idsa_scan
+to return 
+.B IDSA_L_ALLOW
+instead of 
+.B IDSA_L_DENY 
+in case of failures internal to idsa.
+.TP
+.B IDSA_F_ENV
+allow a user to override the location of the 
+.B idsa
+socket using 
+.BR IDSA_SOCKET .
+The use of this is inadvisable for setuid programs.
+.TP
+.B IDSA_F_SIGPIPE
+Do not trap 
+.BR SIG_PIPE .
+This only applies to older platforms, newer ones do 
+require that that any signals be trapped.
+.TP 
+.B IDSA_F_UPLOAD
+Enable the uploading of rules (and thus shared objects) into
+the process space. The use of this option is inadvisable for
+applications which are more trusted than 
+.BR idsad (8).
+.TP
+.B IDSA_F_NOBACKOFF
+Disable the linear backoff strategy in case of a failure of
+.BR idsad (8).
+.TP
+.B IDSA_F_TIMEOUT
+Set a timeout for I/O to 
+.BR idsad (8).
+Using this flag in conjunction with 
+.B IDSA_F_UPLOAD 
+is not advised.
+.TP
+.B IDSA_F_KEEP
+Disable automatic deallocation of events inside 
+.BR idsa_log .
+.PP
+.SH "RETURN VALUE"
+A pointer to an 
+.B IDSA_CONNECTION 
+structure on success, 
+.B NULL
+otherwise.
+.SH FILES
+.I /etc/idsad.conf
+.RS
+Default 
+.BR idsad (8)
+configuration file.
+.RE
+.I /var/run/idsa
+.RS
+Default listen socket.
+.RE
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with
+the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsa_close (3).

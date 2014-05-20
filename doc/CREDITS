@@ -1,0 +1,46 @@
+People who contributed code:
+----------------------------
+
+Marius Aamodt Eriksen and Mike Baker are the original authors
+of snoopy. 
+
+Matthew Kirkwood added idsa_vsyslog and corrected several 
+makefile bugs.
+
+People who discovered bugs: 
+---------------------------
+
+Andras Bali found a problem in accepting new connections,
+bugs in idsaguardtty and mod_idsa.
+
+Systems which influenced IDS/A:
+-------------------------------
+
+sysklogd      by Greg Wettstein, Stephen Tweedie, Juha Virtanen,
+              Shane Alderton, Martin Schulze and others
+ippl          by Hugo Haas and Etienne Bernard
+tcp_wrappers  by Wietse Venema (who has also written a really nice MTA)
+
+Concepts:
+---------
+
+I think it was Matt Bishop who first suggested using key=value
+pairs in log messages. Jerome Abela and Tristan Debeaupuis
+later refined this idea into the ULM internet draft. Although
+not quite compliant with this draft I have taken the liberty
+of calling one of my output formats ULM, and an extension with
+types TULM.
+
+The simple anomaly detector (mod_sad) attempts to identify
+suspicious event sequences by matching them against a dictionary
+of common subsequences. As far as I know this family of
+techniques was first described by Stephanie Forrest's group
+at UNM, though my implementation differs from the classical,
+fixed subsequence matching in a number of ways, eg it can 
+handle variable sequences.
+
+I have probably borrowed ideas from lots of other packages,
+papers and online conversations. Please let me know if you think
+yours was one of them and if you would like to be credited here.
+
+Thank you

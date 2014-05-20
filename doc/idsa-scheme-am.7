@@ -1,0 +1,104 @@
+'\" t
+.\" Process this file with
+.\" groff -t -man -Tascii idsa-scheme-am.7
+.\"
+.TH IDSA-SCHEME-AM 7 "APRIL 2003" "IDS/A System"
+.SH NAME
+IDS/A Access Control Abstraction
+
+.SH DESCRIPTION
+
+.PP
+This page lists the event field names which 
+should be passed to 
+.BR idsa_set (3) 
+or 
+.BR idsa_scan (3) 
+to describe security events in terms of
+an access control model. The primary
+fields are 
+.BR IDSA_AM_SUBJECT ,
+.BR IDSA_AM_OBJECT ,
+and
+.BR IDSA_AM_ACTION , 
+with several types of access actions or 
+modes defined. Additional fields are
+used to report compartments, levels 
+and roles.
+
+.SH FIELDS
+
+.IP IDSA_AM_SUBJECT
+Active entity which attempts the action
+
+.IP IDSA_AM_OBJECT
+Passive entity on which the action is performed
+
+.IP IDSA_AM_ACTION
+Type of action performed. The following string values
+are defined:
+
+.RS
+.IP IDSA_AM_AREAD
+Transfer information to the subject
+.IP IDSA_AM_AWRITE
+Transfer information from the subject
+.IP IDSA_AM_ACREATE
+Generate object
+.IP IDSA_AM_ADESTROY
+Render object inaccessible
+.IP IDSA_AM_AFLOW
+Untrusted transfer: Subject gains sufficient control of object so 
+that subsequent actions performed by object could have been performed 
+at the request of this subject. Used to measure insecurity flow.  
+Appropriate for invoking nonsetuid executables, changing uid, 
+remote logins, etc
+.IP IDSA_AM_AREQUEST
+Trusted transfer: Subject requests a trusted object to 
+perform an action. Appropriate for execution of setuid 
+executables, protocol commands
+.IP IDSA_AM_AOTHER
+Fallback if none of the above are appropriate
+.RE
+
+.IP IDSA_AM_CLEARANCE
+Security level of subject
+
+.IP IDSA_AM_CLASSIFICATION
+Security level of object 
+
+.IP IDSA_AM_DOMAIN
+Compartment of subject
+
+.IP IDSA_AM_TYPE
+Compartment of object
+
+.IP IDSA_AM_ROLE
+Role assumed by subject
+
+.SH EXAMPLE
+
+.RS
+.nf
+struct sockaddr_in sa;
+char *url;
+ ...
+idsa_set(c, "reply", "samplehttpd", 1,
+    IDSA_R_UNKNOWN, IDSA_R_PARTIAL, IDSA_R_MINOR,
+    IDSA_AM_SUBJECT, IDSA_T_SADDR, &sa,
+    IDSA_AM_OBJECT,  IDSA_T_STRING, url,
+    IDSA_AM_ACTION,  IDSA_T_STRING, IDSA_AM_READ,
+    ...
+    NULL);
+.fi
+.RE
+.P
+
+.PP
+Request permission to allow a client access retrieve an url.
+
+.SH SEE ALSO
+
+.BR idsa_set (3),
+.BR idsa_scan (3),
+.BR idsad (8).

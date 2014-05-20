@@ -1,0 +1,32 @@
+.\" Process this file with
+.\" groff -man -Tascii idsapid.8
+.\"
+.TH IDSAPID 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+idsapid \- find or kill the process listening on a given unix domain stream socket
+.SH SYNOPSIS
+.B idsapid
+.B [ -k ] [
+.I /path/to/unix/socket
+.B ] 
+.SH DESCRIPTION
+.B idsapid
+prints the id or kills the process listening on the unix domain socket given on 
+the command line. The socket has to be created as a stream, not a datagram.
+By default it prints the pid of daemon listening on the 
+.B idsa 
+socket.
+.SH OPTIONS
+.IP -k
+send a terminate signal to the process instead of printing its pid
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR idsad (8),
+.BR fuser (1).

@@ -1,0 +1,80 @@
+.\" Process this file with
+.\" groff -man -Tascii idsapipe.8
+.\"
+.TH IDSAPIPE 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+idsapipe \- pipe events to processes
+.SH SYNOPSIS
+.B idsapipe [-n] [ -f
+.I format
+.B ] [ -F 
+.I "custom format"
+.B ] [ -c 
+.I count
+.B ] [[-t|-T] 
+.I timeout
+.B ] [ -i
+.I user
+.B ] [-r 
+.I directory
+.B ] 
+.I command options ...
+.SH DESCRIPTION
+.B idsapipe
+is a utility to be started by 
+.BR idsad (8) 
+as part of the output module
+.BR mod_log (8)
+to pipe events to external processes. Note that
+.B idsapipe
+is started before
+.BR idsad (8)
+drops its privileges.
+.SH OPTIONS
+.IP -n
+Open 
+.I /dev/null
+on the standard out and standard error file descriptors
+.IP "-f format"
+Use another predefined output format
+.IP "-F custom format"
+Use a user-specified output format
+.IP "-c count"
+Close the pipe to the child process after sending
+.I count
+events
+.IP "-t timeout"
+Close the pipe to the child process 
+.I timeout
+seconds after starting it
+.IP "-T timeout"
+Close the pipe to the child process if no new
+events have arrived for
+.I timeout
+seconds
+.IP "-i username"
+Run as specified user instead of root. Group is determined from 
+password file entry
+.IP "-r directory"
+Chroot to specified directory
+.SH EXAMPLES
+.RS
+%true: 
+  log pipe "/usr/sbin/idsapipe -f syslog -t 5 smbclient -M desktop"
+.RE
+.P
+Send messages accumulated over 5 seconds to machine 
+.IR desktop .
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR mod_log (8),
+.BR idsaexec (8),
+.BR idsad (8),
+.BR idsa (1).

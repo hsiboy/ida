@@ -1,0 +1,76 @@
+.\" Process this file with
+.\" groff -man -Tascii idsaexec.8
+.\"
+.TH IDSAEXEC 8 "APRIL 2002" "IDS/A System"
+.SH NAME
+idsaexec \- spawn processes in response to events
+.SH SYNOPSIS
+.B idsaexec [-lns] [-i 
+.I user
+.B ] [-r 
+.I directory
+.B ] [-t 
+.I timeout
+.B ] 
+.I command options ...
+.SH DESCRIPTION
+.B idsaexec
+is a utility to be started by 
+.BR idsad (8) 
+as part of the output module
+.BR mod_log (8)
+to invoke external commands in response
+to events. Note that
+.B idsaexec
+is started before
+.BR idsad (8)
+drops its privileges.
+.SH OPTIONS
+.IP -l
+Log internal errors
+.IP -n
+Open 
+.I /dev/null
+on the standard file descriptors for invoked programs
+.IP -s
+Only start a single child process at a time. Otherwise
+start one as each new message arrives. If this option 
+is not used in conjunction with
+.B -t 
+then
+.B idsaexec 
+may wait indefinitely for a child to exit
+.IP "-t seconds"
+Schedule an alarm signal for the child. If used with the 
+.B -s
+option also terminate the child
+.IP "-i username"
+Run as specified user instead of root. Group is determined from 
+password file entry
+.IP "-r directory"
+Chroot to specified directory
+.IP "command options ..."
+Path an parameters of external command. Understands very simple field
+substitutions introduced by a % at the start of a new word, useful
+for dangerous reactions, eg 
+.BR "kill %pid" 
+.SH EXAMPLES
+.RS
+%true: log pipe "/usr/sbin/idsaexec -nst 5 wavplay /usr/share/aucons/alarm.wav"
+.RE
+.P
+Play an alarm. Interrupt the child after 5 seconds. Only start a new child
+after the previous one has completed.
+.SH AUTHOR
+Marc Welz
+.SH COPYING
+.B idsa
+may only be distributed and modified in accordance with the terms of the
+.B GPL (GNU General Public License)
+as published by the
+.BR "FSF (Free Software Foundation)" .
+.SH SEE ALSO
+.BR mod_log (8),
+.BR idsapipe (8),
+.BR idsad (8),
+.BR idsa(1).

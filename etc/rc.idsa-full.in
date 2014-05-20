@@ -1,0 +1,117 @@
+#!/bin/sh
+#
+# Full IDSA installation including syslog replacement
+#
+# To listen on several /dev/log sockets for chrooted environments
+# start several instances of idsasyslogd with different -p options
+#
+# Remote syslog reception is handled by idsarlogd, and 
+# has been commented out by default.
+#
+# This init script is loosely based on those shipping 
+# with debian. If you run debian, copy this file to
+# /etc/init.d and add a symlink at the appropriate
+# runlevel, eg
+#  
+#   cp rc.idsa-full /etc/init.d/idsa
+#   cd /etc/rc2.d
+#   ln -s ../init.d/idsa S11idsa
+# 
+# Since the full version replaces the normal
+# system logger, you also want to disable sysklogd, eg
+#
+#   rm /etc/rc2.d/S10sysklogd 
+
+####################################################################
+# Global security options
+#
+#OPTIONS="-i idsa -r /var/chroot"
+OPTIONS="-i daemon"
+
+####################################################################
+# Master daemon 
+#
+CONF=/usr/local/etc/idsad.conf
+IDSAD="/usr/local/sbin/idsad $OPTIONS -f $CONF"
+
+# Listen on extra socket in chroot
+#SOCKETS="/var/run/idsa /var/chroot/var/run/idsa"
+#IDSAD="/usr/local/sbin/idsad $OPTIONS -f $CONF -p $SOCKETS"
+
+####################################################################
+# Simple connection logger
+#
+# Log all packets (instead of just SYN) for the selected ports below
+# to catch stealth scans. You can also use -A to log all packets destined to
+# all unbound ports, but then take care to start idsatcplogd separately
+# after all other network services have bound their ports.
+#
+STEALTHPORTS="13 37 79 98 280"
+IDSATCPLOGD="/usr/local/sbin/idsatcplogd $OPTIONS -a $STEALTHPORTS"
+
+####################################################################
+# Syslog replacements
+# 
+IDSASYSLOGD="/usr/local/sbin/idsasyslogd $OPTIONS"
+IDSAKLOGD="/usr/local/sbin/idsaklogd $OPTIONS"
+
+# remote logging, in case the name server is only available later, 
+# idsarlogd can be started separately, after the name server
+#RLOGCLIENTS="192.168.1.1 192.168.2.11 ftp.example.com"
+#IDSARLOGD="/usr/local/sbin/idsarlogd $OPTIONS $RLOGCLIENTS"
+
+####################################################################
+# Miscellany
+#
+IDSAPID=/usr/local/sbin/idsapid 
+
+# log/lock sockets
+#
+TLOCK=/var/run/idsatcplogd
+RLOCK=/var/run/idsarlogd
+KLOCK=/var/run/idsaklogd
+IDSALOCK=/var/run/idsa
+DEVLOG=/dev/log
+
+####################################################################
+
+case "$1" in
+  start)
+     echo -n "Starting idsa subsystem:"
+     $IDSAD
+     echo -n " idsad"
+     $IDSASYSLOGD
+     echo -n " idsasyslogd"
+     $IDSAKLOGD
+     echo -n " idsaklogd"
+     $IDSATCPLOGD
+     echo -n " idsatcplogd"
+#$IDSARLOGD
+#echo -n " idsarlogd"
+     echo "."
+     ;;
+  stop)
+     echo -n "Stopping idsa subsystem:"
+#$IDSAPID -k $RLOCK
+#echo -n " idsarlogd"
+     $IDSAPID -k $TLOCK
+     echo -n " idsatcplogd"
+     $IDSAPID -k $KLOCK
+     echo -n " klogd"
+     $IDSAPID -k $DEVLOG
+     echo -n " idsasyslogd"
+     $IDSAPID -k $IDSALOCK
+     echo -n " idsad"
+     echo "."
+     ;;
+  restart)
+     echo -n "Restarting idsad: "
+     $IDSAD -k
+     echo "idsad."
+     ;;
+  *)
+     echo "Usage: $0 {start|stop|restart}"
+     exit 1
+esac
+
+exit 0
