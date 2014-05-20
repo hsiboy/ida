@@ -1,0 +1,59 @@
+Application Access Control and Intrusion Detection
+
+Marc Welz
+Introduction
+
+Access control and intrusion detection is usually done at the operating system or network level. The host OS decides if a certain user space program[1] gets to open a particular file, the firewall decides if a certain packet will reach a network service.
+
+Performing such security tasks at a low level has the advantage that it doesn't depend on the integrity of the monitored application, but it also has disadvantages: Interesting applications tend to introduce their own abstractions, these in turn introduce new security issues.
+
+A simple example would be a database server: It uses file and block device abstractions provided by the operating system, but presents a different abstraction containing items such as tables and transactions to its clients. Conventional operating system access controls aren't that useful for a database server, so usually database servers provide their own access control, as so do mail transfer agents (e.g. relay lists) and web browsers (e.g. cookie acceptance policies).
+
+This results in two problems: Access control is scattered over a number of applications, and low level monitoring turns into a hard problem.
+
+Problem I: Scattered, Insular and Inaccessible Access Control
+
+Applications which provide new abstractions accessible to multiple users usually end up implementing their own access control subsystem. This can have a number of disadvantages:
+Multiple access control systems make it more difficult to implement a globally consistent policy - chances are greater that some application will remain mis or unconfigured.
+Per application access control systems are likely to be simple, making it more difficult to express complex access control constraints.
+There is little possibility to share access control information between different applications. A good example would be the interaction between conventional POP and SMTP servers: Systems with intermittent connectivity retrieve mail from a POP server and submit outgoing mail to the SMTP server which forwards the mail to its final destination. Relaying mail for just anybody invites abuse by spammers, so a number of installations only allow SMTP relaying for clients which have recently authenticated themselves by logging into the POP server. Often this process is awkward and expensive - usually a script polls the POP server logs for signs of a successful login and then rewrites some SMTP server access control file to add the given host to an access control lists.
+Problem II: Low Level Application Monitoring is Hard
+
+At first glance may appear easy to monitor a web server or database by examining the traffic sent to it. Indeed, most commercially deployed intrusion detection systems operate by intercepting network traffic. However, reliable monitoring is remarkably difficult, as it requires that the intercepting party duplicate the logic of the application faithfully. This can be arbitrarily complex:
+Stateful interactions require that the interceptor shadow the state of the application for extended periods of time, which can tie up significant resources
+Inaccuracies in application specifications or implementations mean that the interceptor has to maintain bug compatibility
+Multiple implementation and revisions require that an interceptor be able to distinguish between different application instances
+Environmental factors such as network topology or hardware limits may influence the behaviour of applications - an interceptor may have to be aware of these issues
+Where monitoring is passive, the monitor has to have a worst case performance which exceeds the best case of the monitored application, otherwise an attacker could generate a set of messages which are dropped by an overloaded monitor but still seen by the application
+End to end encryption can blind an intercepting monitor completely
+See this paper by Ptacek and Newsham for a description of these problems as encountered in IP networks. The problems are not theoretical - a scanner such as whisker can probe a web server for vulnerable CGI scripts over SSL, which makes the probe almost invisible to network level monitors.
+
+For mature and well defined protocols some of the above problems can be addressed by protocol scrubbers. However, in the general case low level monitoring provides only incomplete coverage, providing protection against inexperienced or automated attackers, but leaving enough gaps for an experienced attacker to go undetected.
+
+External Access Control
+
+A possible solution to the above two problems involves externalising the application level reference monitor - initially this is counterintuitive, since a reference monitor should be non-bypassable. However, it is possible to externalise just the access control computation, and rely on the application to enforce this computation. In other words, the application reports a pending action with security implications to an external reference monitor which approves or denies this request and the application ensures that this either or decision is carried out.
+
+The disadvantage of this approach is that it relies on the co-operation of applications: Applications need to be modified and need to report correct information to the reference monitor. However, once an application has been suitably instrumented it becomes possible to deal with the two problems outlined above:
+
+Unified Access Control
+
+As an external reference monitor can handle access control decisions for a number applications it becomes possible to implement a unified access control policy. Since only one reference monitor needs to be implemented, it becomes feasible to support complex access relationships. For example, events submitted by one application (such as a suspect port scan) could influence access control decisions made for other applications (disable all but essential functionality).
+
+Easier Application Monitoring
+
+An external reference monitor is well placed to act as logger and intrusion detection system as it receives just security relevant information at the abstraction level of the application. This contrasts with low level monitoring systems which may have to examine a substantial trace of low level events, filter out extraneous information and use the remainder to reconstruct higher level activity. Such reconstructions make the lower level monitors vulnerable to desynchronisation attacks. The direct instrumentation proposed here allows the reference monitor to receive the events as the application sees them, making desynchronisation attacks much more difficult.
+
+Additional Benefits
+
+Exposing the access control decisions normally hidden inside an application has additional benefits: Application access control becomes pluggable, making it possible to exchange policies transparently: In one environment a given application might have to implement a Multi Level access control model, in another environment it might be more appropriate for the same application to enforce a Chinese Wall model.
+
+Another use for an exposed access control interface is to restrict the available feature set of applications. Some applications offer a large feature set, of which some functions may be too risky for certain environments. For example, one installation may only wish to offer anonymous readonly ftp, even though the ftp daemon used supports the full ftp feature set. Conventionally these features may be disabled in some configuration file at application startup, but an exposed reference monitor can also perform this function, with the added benefit that risky features could be disabled dynamically. For example, the reference monitor might restrict available functionality to only essential operations during a suspected intrusion attempt.
+Summary
+
+Externalising the reference monitor commonly hidden inside applications appears to be a promising method to guard applications against abuse. The (previously invisible) access control decisions provide useful information to misuse detectors and other monitoring tools, while the ability to influence the decisions makes dynamic, fine-grained responses feasible.
+Related Documents
+
+M. G. Welz, A. C. M. Hutchison: Modulating Access Control at the Application for Closely Coupled Intrusion Detection, in 1st Computer Science Mini Conference, Cape Town, South Africa, July 2002.
+
+M. G. Welz, A. C. M. Hutchison: Interfacing Trusted Applications with Intrusion Detection Systems, in 4th Symposium on Recent Advances in Intrusion Detection (RAID), Davis, California, pp. 37-53, LNCS Vol. 2212 Springer Verlag, October 2001.
