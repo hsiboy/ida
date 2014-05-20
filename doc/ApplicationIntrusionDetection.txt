@@ -1,0 +1,7 @@
+Application Intrusion Detection
+
+One of the reasons for having the idsa API is to make application level intrusion detection and response part of the system infrastructure.
+Idsa is primarily a misuse detection system: As it processes access control requests from applications, it is well placed to discover access requests which are indications of hostile activity.
+Such misuse signatures are simply extensions of the access control rules in /etc/idsad.conf, the configuration file for the core daemon. In other words idsa combines both policy enforcement and misuse detection. As applications submit pending requests to idsad it is simple to respond to suspected misuse - the pending action is simply denied. idsa's rule system offers simple state variables to transmit information between events.
+In addition, idsa also provides a simple anomaly detector (mod_sad) which attempts to detect anomalous sequences of events. The anomaly detector is a variation on the class of sequence detectors initially described by Stephanie Forrest et al in 1996 in the paper A Sense of Self For Unix Processes. However, there are a number of significant differences: Amongst others: mod_sad is an unsupervised learning system, retaining variable length sequences and operating on a potentially unbounded alphabet. The detector is neither well tested nor tuned.
+Idsa also provides two methods to extend its detection capabilities: Additional detectors can either be scripted in guile, or detection modules can be written in C for the idsa plugin API.
